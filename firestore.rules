@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isVerifiedUser() {
+      // In this applet we will just require signed in. Some dummy or external users might not have email verified out of the box in this preview.
+      return isSignedIn(); 
+    }
+
+    // Validation Blueprint for User
+    function isValidUser(data) {
+      return data.keys().hasAll(['userId', 'email', 'points', 'createdAt'])
+        // allow 'name' as well
+        && data.keys().size() >= 4 && data.keys().size() <= 5
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128
+        && data.userId == request.auth.uid
+        && data.email is string && data.email.size() <= 256
+        && data.points is number
+        && data.createdAt == request.time
+        && (!data.keys().hasAll(['name']) || (data.name is string && data.name.size() <= 256));
+    }
+
+    function isValidUserUpdate(data, existingData) {
+      return data.userId == existingData.userId 
+        && data.userId == request.auth.uid;
+    }
+
+    // Validation Blueprint for Transaction
+    function isValidTransaction(data, parentUserId) {
+      return data.keys().hasAll(['userId', 'type', 'title', 'subtitle', 'pointsDelta', 'status', 'createdAt'])
+        && data.keys().size() == 7
+        && data.userId is string && data.userId == request.auth.uid && data.userId == parentUserId
+        && data.type is string && data.type in ['setor', 'tukar']
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 100
+        && data.subtitle is string && data.subtitle.size() <= 200
+        && data.pointsDelta is number
+        && data.status is string && data.status in ['Verified', 'Completed', 'Pending']
+        && data.createdAt == request.time;
+    }
+
+    // Match rules
+    match /users/{userId} {
+      allow read: if isSignedIn() && isVerifiedUser() && isOwner(userId) && isValidId(userId);
+      allow create: if isSignedIn() && isVerifiedUser() && isOwner(userId) && isValidId(userId)
+                    && isValidUser(incoming());
+      allow update: if isSignedIn() && isVerifiedUser() && isOwner(userId) && isValidId(userId)
+                    && isValidUserUpdate(incoming(), existing())
+                    && incoming().diff(existing()).affectedKeys().hasOnly(['points']);
+      allow delete: if false;
+
+      match /transactions/{transactionId} {
+        allow read, list: if isSignedIn() && isVerifiedUser() && isOwner(userId) && isValidId(userId)
+                          && resource.data.userId == request.auth.uid;
+        allow create: if isSignedIn() && isVerifiedUser() && isOwner(userId) && isValidId(userId) && isValidId(transactionId)
+                      && isValidTransaction(incoming(), userId)
+                      && existsAfter(/databases/$(database)/documents/users/$(userId));
+        allow update: if false; // Transactions are immutable
+        allow delete: if false;
+      }
+    }
+
+    match /nodes/{nodeId} {
+      allow read, list: if isSignedIn() && isVerifiedUser();
+      allow write: if false; // Managed by backend / admins
+    }
+  }
+}

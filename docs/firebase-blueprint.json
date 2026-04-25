@@ -1,0 +1,95 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with their total points and basic info.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address"
+        },
+        "name": {
+          "type": "string"
+        },
+        "points": {
+          "type": "number",
+          "description": "Total available points"
+        },
+        "createdAt": {
+          "type": "timestamp"
+        }
+      },
+      "required": ["userId", "email", "points", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "User transaction history.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["setor", "tukar"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "pointsDelta": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Verified", "Completed", "Pending"]
+        },
+        "createdAt": {
+          "type": "timestamp"
+        }
+      },
+      "required": ["userId", "type", "title", "subtitle", "pointsDelta", "status", "createdAt"]
+    },
+    "Node": {
+      "title": "Node",
+      "description": "Collection node locations.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "distance": {
+          "type": "string"
+        },
+        "isOpen": {
+          "type": "boolean"
+        },
+        "icon": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "distance", "isOpen", "icon"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user points and profile information."
+    },
+    "users/{userId}/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Stores a user's transaction history."
+    },
+    "nodes/{nodeId}": {
+      "schema": { "$ref": "#/entities/Node" },
+      "description": "Stores globally available collection nodes."
+    }
+  }
+}
