@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, orderBy, doc, writeBatch, serverTimestamp, increment } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../services/firebase';
 import { User } from 'firebase/auth';
 
 export interface UserData {
