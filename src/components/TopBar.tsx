@@ -2,10 +2,22 @@ import React, { useState } from 'react';
 import { Bell, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
+import type { DashboardTab } from './BottomNav';
 
-export const TopBar = ({ onLogout }: { onLogout: () => void }) => {
+interface TopBarProps {
+  onLogout: () => void;
+  activeTab?: DashboardTab;
+  onTabChange?: (tab: DashboardTab) => void;
+}
+
+export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange }) => {
   const { userData, user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
+
+  const navBtnClass = (tab: DashboardTab) =>
+    activeTab === tab
+      ? 'flex items-center gap-2 text-forest-700 font-bold transition-colors duration-150'
+      : 'flex items-center gap-2 text-forest-900/50 hover:text-forest-700 transition-colors duration-150';
   
   return (
     <header className="absolute top-0 right-0 left-0 h-16 bg-white/90 backdrop-blur-md border-b border-slate-100 z-40 flex items-center justify-between px-4">
@@ -17,13 +29,13 @@ export const TopBar = ({ onLogout }: { onLogout: () => void }) => {
       </div>
 
       <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-        <button className="flex items-center gap-2 text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
+        <button onClick={() => onTabChange?.('home')} className={navBtnClass('home')}>
           <span>Beranda</span>
         </button>
-        <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors">
+        <button onClick={() => onTabChange?.('map')} className={navBtnClass('map')}>
           <span>Map Node</span>
         </button>
-        <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors">
+        <button onClick={() => onTabChange?.('riwayat')} className={navBtnClass('riwayat')}>
           <span>Riwayat</span>
         </button>
       </div>

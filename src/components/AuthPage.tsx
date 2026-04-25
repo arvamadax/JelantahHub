@@ -11,45 +11,42 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
   const { signIn } = useAuth();
 
   return (
-    <div className="min-h-[100dvh] w-full bg-slate-50 flex flex-col">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 md:px-6 h-16">
+    <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
+      <header className="sticky top-0 z-30 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4]">
+        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 md:px-6 h-full">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 -ml-3 rounded-lg hover:bg-slate-100 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-forest-700 hover:text-forest-900 px-3 py-2 -ml-3 rounded-lg hover:bg-forest-50 transition-colors duration-150"
           >
             <ArrowLeft size={16} />
             Kembali
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-display font-black text-sm shadow-md shadow-emerald-500/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-lg">
               J
             </div>
-            <span className="font-display font-extrabold tracking-tight text-slate-900">
+            <span className="font-display font-extrabold tracking-tight text-forest-900">
               JelantahHub
             </span>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4 md:p-6 relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-400/25 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
-        <div className="absolute -bottom-32 -left-16 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
-
+      <main className="flex-1 flex items-center justify-center p-4 md:p-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-sm border border-slate-100 p-8"
+          className="w-full max-w-md bg-white rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] p-8"
         >
           <div className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-display font-black text-3xl mx-auto mb-6 shadow-lg shadow-emerald-500/30">
+            <div className="w-16 h-16 rounded-2xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-3xl mx-auto mb-6">
               J
             </div>
-            <h1 className="font-display font-extrabold text-2xl tracking-tight text-slate-900">
+            <h1 className="font-display font-extrabold text-2xl tracking-tight text-forest-900">
               Masuk ke JelantahHub
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-forest-900/60">
               Lanjutkan perjalanan sirkularmu — gratis dan tanpa kartu kredit.
             </p>
           </div>
@@ -57,7 +54,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
           <div className="mt-8 space-y-3">
             <button
               onClick={signIn}
-              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold rounded-2xl shadow-md transition-all min-h-[56px]"
+              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-forest-700 hover:bg-forest-800 active:bg-forest-900 text-cream-50 font-bold rounded-xl shadow-[var(--shadow-forest)] transition-colors duration-150 min-h-[56px]"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
                 <path
@@ -81,18 +78,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
             </button>
           </div>
 
-          <div className="mt-6 flex items-center gap-3 justify-center text-xs text-slate-500">
-            <ShieldCheck size={14} className="text-emerald-600" />
+          <div className="mt-6 flex items-center gap-2 justify-center text-xs text-forest-900/60">
+            <ShieldCheck size={14} className="text-forest-700" />
             Data kamu dienkripsi & tidak akan dibagikan.
           </div>
 
-          <p className="mt-8 text-[11px] text-center text-slate-400 leading-relaxed">
+          <p className="mt-8 text-[11px] text-center text-forest-900/50 leading-relaxed">
             Dengan melanjutkan, kamu menyetujui{' '}
-            <a href="#" className="text-emerald-700 hover:underline">
+            <a href="#" className="text-amber-700 hover:text-amber-800 hover:underline">
               Syarat Layanan
             </a>{' '}
             dan{' '}
-            <a href="#" className="text-emerald-700 hover:underline">
+            <a href="#" className="text-amber-700 hover:text-amber-800 hover:underline">
               Kebijakan Privasi
             </a>{' '}
             JelantahHub.

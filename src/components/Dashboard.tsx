@@ -6,7 +6,9 @@ import { useFirebaseLogic } from '../hooks/useFirebaseLogic';
 import { TopBar } from './TopBar';
 import { ActivityItem } from './ActivityItem';
 import { NearbyNodeCard } from './NearbyNodeCard';
-import { BottomNav } from './BottomNav';
+import { BottomNav, type DashboardTab } from './BottomNav';
+import { RiwayatPage } from './dashboard/RiwayatPage';
+import { TitikKumpulPage } from './dashboard/TitikKumpulPage';
 
 interface NodeProps {
   id: string;
@@ -20,6 +22,8 @@ export const Dashboard: React.FC = () => {
   const { user, userData, logOut } = useAuth();
   const { transactions, handleSetor, handleTukar } = useFirebaseLogic(user, userData);
 
+  const [tab, setTab] = useState<DashboardTab>('home');
+
   const [nodes] = useState<NodeProps[]>([
     { id: '1', name: 'Bank Sampah Melati', distance: '1.2 km', isOpen: true, icon: 'Store' },
     { id: '2', name: 'Warung Bu Tejo', distance: '3.5 km', isOpen: false, icon: 'Utensils' },
@@ -29,10 +33,15 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] w-full bg-slate-50 flex flex-col">
-      <TopBar onLogout={logOut} />
+      <TopBar onLogout={logOut} activeTab={tab} onTabChange={setTab} />
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-24 md:pb-12 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+          {tab === 'riwayat' ? (
+            <RiwayatPage />
+          ) : tab === 'map' ? (
+            <TitikKumpulPage />
+          ) : (
           <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-12 md:gap-6">
             {/* Left Column */}
             <div className="md:col-span-7 space-y-6">
@@ -136,7 +145,10 @@ export const Dashboard: React.FC = () => {
                   </ul>
                   {transactions.length > 0 && (
                     <div className="p-3 bg-slate-50 text-center border-t border-slate-100">
-                      <button className="text-emerald-700 text-xs font-bold active:text-emerald-800 min-h-[30px] px-4">
+                      <button
+                        onClick={() => setTab('riwayat')}
+                        className="text-emerald-700 text-xs font-bold active:text-emerald-800 min-h-[30px] px-4"
+                      >
                         Lihat Semua Transaksi
                       </button>
                     </div>
@@ -145,10 +157,11 @@ export const Dashboard: React.FC = () => {
               </section>
             </div>
           </div>
+          )}
         </div>
       </main>
 
-      <BottomNav />
+      <BottomNav activeTab={tab} onTabChange={setTab} />
     </div>
   );
 };
