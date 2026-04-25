@@ -2,7 +2,7 @@ import React from 'react';
 import { Home, MapPin, PlusCircle, History, User as UserIcon } from 'lucide-react';
 
 export const BottomNav = () => (
-  <nav className="absolute bottom-0 w-full bg-white border-t border-slate-200 pb-safe pt-2 px-6 flex justify-between items-center z-50">
+  <nav className="absolute bottom-0 w-full bg-white border-t border-slate-200 pb-safe pt-2 px-6 flex justify-between items-center z-50 md:hidden">
     <button className="flex flex-col items-center p-2 text-emerald-600 min-w-[64px] min-h-[44px]">
       <Home size={22} className="mb-1" />
       <span className="text-[9px] font-bold">Beranda</span>

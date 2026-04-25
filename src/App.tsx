@@ -40,7 +40,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="max-w-md mx-auto h-screen flex items-center justify-center bg-surface-bg text-emerald-600">
+      <div className="w-full h-screen flex items-center justify-center text-emerald-600">
         <div className="animate-pulse flex flex-col items-center">
           <Leaf size={40} className="mb-4" />
           <p className="font-bold">Memuat...</p>
@@ -51,15 +51,15 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto h-screen flex flex-col items-center justify-center bg-surface-bg p-6 relative overflow-hidden">
+      <div className="w-full h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
         {/* Decorative bg */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl mix-blend-multiply"></div>
-        <div className="absolute bottom-10 left-10 w-48 h-48 bg-teal-400/20 rounded-full blur-3xl mix-blend-multiply"></div>
+        <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-emerald-400/20 rounded-full blur-3xl mix-blend-multiply"></div>
+        <div className="absolute bottom-10 left-10 w-48 md:w-72 h-48 md:h-72 bg-teal-400/20 rounded-full blur-3xl mix-blend-multiply"></div>
         
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl w-full shadow-2xl border border-white relative z-10 text-center"
+          className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl w-full max-w-md shadow-2xl border border-white relative z-10 text-center"
         >
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-display font-black text-4xl mx-auto mb-6 shadow-lg shadow-emerald-500/30">
             J
@@ -78,14 +78,15 @@ export default function App() {
   }
 
   return (
-    // Mobile Wrapper Constraint
-    <div className="max-w-md mx-auto h-[100dvh] bg-surface-bg relative overflow-hidden flex flex-col shadow-2xl">
+    // Responsive Wrapper
+    <div className="w-full max-w-md md:max-w-5xl lg:max-w-6xl mx-auto h-[100dvh] relative overflow-hidden flex flex-col shadow-2xl md:shadow-none md:bg-transparent">
       <TopBar onLogout={logOut} />
       
-      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-20 pb-24 px-4 custom-scrollbar">
-        <div className="space-y-6">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-24 md:pb-8 px-4 md:px-6 custom-scrollbar">
+        <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-12 md:gap-8">
           
-          {/* Stats Card */}
+          {/* Left Column */}
+          <div className="md:col-span-7 space-y-6">
           <motion.section 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -132,7 +133,10 @@ export default function App() {
             </div>
             <ArrowUpRight size={16} className="text-slate-400" />
           </section>
+          </div>
 
+          {/* Right Column */}
+          <div className="md:col-span-5 space-y-6">
           {/* Nearby Nodes */}
           <section>
             <div className="flex items-center justify-between mb-3 px-1">
@@ -182,6 +186,7 @@ export default function App() {
               )}
             </div>
           </section>
+          </div>
           
         </div>
       </main>

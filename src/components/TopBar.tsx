@@ -13,7 +13,19 @@ export const TopBar = ({ onLogout }: { onLogout: () => void }) => {
         <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-display font-bold text-lg">
           J
         </div>
-        <h1 className="text-xl font-extrabold text-emerald-600 tracking-tighter leading-none">JelantahHub</h1>
+        <h1 className="text-xl font-extrabold text-emerald-600 tracking-tighter leading-none hidden sm:block">JelantahHub</h1>
+      </div>
+
+      <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+        <button className="flex items-center gap-2 text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
+          <span>Beranda</span>
+        </button>
+        <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors">
+          <span>Map Node</span>
+        </button>
+        <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors">
+          <span>Riwayat</span>
+        </button>
       </div>
       
       <div className="flex items-center gap-3">
