@@ -2,12 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 
-console.log("Firebase Config Status:", {
-  apiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: !!import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: !!import.meta.env.VITE_FIREBASE_PROJECT_ID
-});
-
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy-api-key",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
