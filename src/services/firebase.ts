@@ -11,12 +11,25 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "dummy-app-id",
 };
 
-const app = initializeApp(firebaseConfig);
-const databaseId = import.meta.env.VITE_FIREBASE_DATABASE_ID;
+let app: any;
+export let db: any;
+export let auth: any;
+export let googleProvider: any;
 
-export const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+try {
+  const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+  if (apiKey && apiKey !== "dummy-api-key") {
+    app = initializeApp(firebaseConfig);
+    const databaseId = import.meta.env.VITE_FIREBASE_DATABASE_ID;
+    db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+  } else {
+    console.warn("Firebase configuration is missing or using dummy values. Initialization skipped.");
+  }
+} catch (error) {
+  console.error("Firebase Initialization Error:", error);
+}
 
 export enum OperationType {
   CREATE = 'create',
