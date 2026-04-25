@@ -20,12 +20,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
       : 'flex items-center gap-2 text-forest-900/50 hover:text-forest-700 transition-colors duration-150';
   
   return (
-    <header className="absolute top-0 right-0 left-0 h-16 bg-white/90 backdrop-blur-md border-b border-slate-100 z-40 flex items-center justify-between px-4">
+    <header className="absolute top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4] z-40 flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-display font-bold text-lg">
+        <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-cream-50 font-display font-bold text-lg">
           J
         </div>
-        <h1 className="text-xl font-extrabold text-emerald-600 tracking-tighter leading-none hidden sm:block">JelantahHub</h1>
+        <h1 className="text-xl font-extrabold text-forest-900 tracking-tighter leading-none hidden sm:block">JelantahHub</h1>
       </div>
 
       <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">

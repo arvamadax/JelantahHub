@@ -32,7 +32,7 @@ export const Dashboard: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-[100dvh] w-full bg-slate-50 flex flex-col">
+    <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
       <TopBar onLogout={logOut} activeTab={tab} onTabChange={setTab} />
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-24 md:pb-12 custom-scrollbar">
@@ -48,29 +48,27 @@ export const Dashboard: React.FC = () => {
               <motion.section
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative bg-gradient-to-br from-emerald-500 to-teal-700 rounded-3xl p-6 md:p-8 text-white overflow-hidden shadow-sm"
+                className="relative bg-forest-700 rounded-3xl p-6 md:p-8 text-cream-50 overflow-hidden shadow-sm"
               >
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-
                 <div className="relative z-10">
-                  <p className="text-xs font-medium text-emerald-100 mb-1">Total Saldo Poin</p>
+                  <p className="text-xs font-medium text-cream-50/70 mb-1">Total Saldo Poin</p>
                   <div className="flex items-baseline gap-2 mb-6">
-                    <h2 className="text-5xl font-extrabold font-display leading-none">
+                    <h2 className="text-5xl font-extrabold font-display leading-none text-amber-400 tabular-nums">
                       {userData?.points?.toLocaleString() || 0}
                     </h2>
-                    <span className="text-xl font-medium opacity-80">Pts</span>
+                    <span className="text-xl font-medium text-cream-50/70">Pts</span>
                   </div>
 
                   <div className="flex gap-3">
                     <button
                       onClick={handleSetor}
-                      className="flex-1 py-3 bg-white text-emerald-700 text-sm font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-center min-h-[44px]"
+                      className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-cream-50 text-sm font-bold rounded-xl transition-colors duration-150 text-center min-h-[44px]"
                     >
                       Setor
                     </button>
                     <button
                       onClick={handleTukar}
-                      className="flex-1 py-3 border border-emerald-300/50 text-white text-sm font-bold rounded-xl active:bg-white/10 active:scale-95 transition-all text-center min-h-[44px]"
+                      className="flex-1 py-3 bg-transparent border border-cream-50/30 hover:border-cream-50/60 text-cream-50 text-sm font-bold rounded-xl transition-colors duration-150 text-center min-h-[44px]"
                     >
                       Tukar
                     </button>
@@ -101,7 +99,10 @@ export const Dashboard: React.FC = () => {
               <section>
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h3 className="text-base font-bold text-slate-800 font-display">Titik Kumpul</h3>
-                  <button className="text-emerald-600 text-[11px] font-bold p-1 rounded min-h-[30px] min-w-[30px] active:bg-emerald-50">
+                  <button
+                    onClick={() => setTab('map')}
+                    className="text-amber-700 hover:text-amber-800 text-[11px] font-bold p-1 rounded min-h-[30px] min-w-[30px] transition-colors duration-150"
+                  >
                     Lihat Peta
                   </button>
                 </div>
@@ -147,7 +148,7 @@ export const Dashboard: React.FC = () => {
                     <div className="p-3 bg-slate-50 text-center border-t border-slate-100">
                       <button
                         onClick={() => setTab('riwayat')}
-                        className="text-emerald-700 text-xs font-bold active:text-emerald-800 min-h-[30px] px-4"
+                        className="text-amber-700 hover:text-amber-800 text-xs font-bold min-h-[30px] px-4 transition-colors duration-150"
                       >
                         Lihat Semua Transaksi
                       </button>

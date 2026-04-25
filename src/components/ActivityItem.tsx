@@ -10,7 +10,7 @@ export const ActivityItem = ({ type, title, subtitle, points, status }: { type: 
   >
     <div className="flex items-center gap-3">
       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-        type === 'setor' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'
+        type === 'setor' ? 'bg-amber-50 text-amber-500' : 'bg-orange-100 text-orange-600'
       }`}>
         {type === 'setor' ? <Droplets size={20} /> : <Gift size={20} />}
       </div>

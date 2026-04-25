@@ -163,22 +163,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 <img
                   src="/logos/klhk.png"
                   alt="KLHK"
-                  className="h-6 grayscale brightness-0 opacity-60"
+                  className="h-6 opacity-70 mix-blend-multiply"
                 />
                 <img
                   src="/logos/pertamina-nre.jpg"
                   alt="Pertamina NRE"
-                  className="h-6 grayscale brightness-0 opacity-60"
-                />
-                <img
-                  src="/logos/pertamina.webp"
-                  alt="Pertamina"
-                  className="h-6 grayscale brightness-0 opacity-60"
+                  className="h-6 opacity-70 mix-blend-multiply"
                 />
                 <img
                   src="/logos/iyref.webp"
                   alt="IYREF 2026"
-                  className="h-6 grayscale brightness-0 opacity-60"
+                  className="h-6 opacity-70 mix-blend-multiply"
                 />
               </motion.div>
             </div>

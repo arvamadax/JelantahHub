@@ -14,9 +14,9 @@ export const NearbyNodeCard = ({ title, distance, isOpen, icon: Icon }: { title:
     </div>
     <div className="shrink-0 flex flex-col items-end gap-1">
       <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider ${
-        isOpen ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+        isOpen ? 'bg-amber-50 text-amber-700' : 'bg-cream-200 text-forest-900/40'
       }`}>
-        <span className={`w-1 h-1 rounded-full ${isOpen ? 'bg-emerald-600' : 'bg-red-600'}`}></span>
+        <span className={`w-1 h-1 rounded-full ${isOpen ? 'bg-amber-500' : 'bg-forest-900/30'}`}></span>
         {isOpen ? 'Open' : 'Closed'}
       </span>
     </div>
