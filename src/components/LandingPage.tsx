@@ -237,14 +237,27 @@ const PetaTitikSetor: React.FC = () => {
           </div>
 
           {/* RIGHT: map placeholder */}
-          {/* TODO: replace with Leaflet map */}
-          <div className="bg-forest-50 border border-[#E8DEC4] rounded-2xl h-72 md:h-[480px] flex flex-col items-center justify-center text-center px-6">
-            <MapPin size={32} className="text-forest-700/60 mb-3" aria-hidden="true" />
-            <p className="font-display font-bold text-forest-900">
-              Peta interaktif akan tersedia
+          <div className="bg-forest-50 border border-[#E8DEC4] rounded-2xl h-full min-h-[320px] flex flex-col items-center justify-center text-center px-8 py-10">
+            <MapPin size={36} className="text-forest-300 mb-4" aria-hidden="true" />
+            <p className="font-display font-bold text-forest-700 text-lg mb-2">
+              Peta Interaktif
             </p>
-            <p className="text-[13px] text-forest-900/50 mt-1">
-              Dukungan Leaflet.js untuk menampilkan node terdekat.
+            <p className="text-sm text-forest-700/60 max-w-[200px] leading-relaxed">
+              Akan menampilkan titik setor aktif di sekitarmu secara real-time.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2 justify-center">
+              {['Bank Sampah', 'Warung Mitra', 'Pos RT'].map((tag) => (
+                <span
+                  key={tag}
+                  className="bg-forest-100 text-forest-700 text-[11px] font-semibold px-3 py-1 rounded-full"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            {/* TODO: replace with Leaflet map */}
+            <p className="mt-4 text-[11px] text-forest-700/40">
+              Powered by Leaflet.js · Coming soon
             </p>
           </div>
         </div>
@@ -571,7 +584,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
       <PetaTitikSetor />
 
       {/* Impact Proof */}
-      <section id="dampak" className="py-20 md:py-24 bg-cream-100 border-t border-[#E8DEC4]">
+      <section id="dampak" className="py-16 md:py-20 pb-10 md:pb-14 bg-cream-100 border-t border-[#E8DEC4]">
         <div ref={dampakRef} className="max-w-[1200px] mx-auto px-4 md:px-6">
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto">
@@ -638,7 +651,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonial" className="bg-white border-y border-[#E8DEC4] py-20 md:py-24">
+      <section id="testimonial" className="bg-white border-y border-[#E8DEC4] pt-14 md:pt-16 pb-20 md:pb-24">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
@@ -665,7 +678,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 <p className="text-forest-900/80 text-[15px] leading-relaxed italic">
                   “{t.quote}”
                 </p>
-                <div className="mt-5 pt-5 border-t border-[#E8DEC4] flex items-center gap-3">
+                <div className="mt-5 pt-5 border-t border-[#E8DEC4] flex items-center gap-3 min-w-0">
                   <div
                     className={`w-10 h-10 rounded-full font-bold ${t.textColor ?? 'text-cream-50'} text-sm flex items-center justify-center ${t.color}`}
                     aria-hidden="true"
