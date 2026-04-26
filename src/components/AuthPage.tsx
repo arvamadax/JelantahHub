@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { ArrowLeft, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface AuthPageProps {
@@ -9,6 +9,7 @@ interface AuthPageProps {
 
 export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
   const { signIn } = useAuth();
+  const [showPhone, setShowPhone] = React.useState(false);
 
   return (
     <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
@@ -76,11 +77,57 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
               </svg>
               Lanjutkan dengan Google
             </button>
+
+            <div className="relative flex items-center gap-3 my-1">
+              <div className="flex-1 h-px bg-[#E8DEC4]" />
+              <span className="text-[12px] text-forest-900/40">atau</span>
+              <div className="flex-1 h-px bg-[#E8DEC4]" />
+            </div>
+
+            <button
+              onClick={() => setShowPhone(!showPhone)}
+              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-cream-50 hover:bg-cream-100 border border-[#E8DEC4] text-forest-900 font-semibold rounded-xl transition-colors duration-150 min-h-[56px]"
+            >
+              <Phone size={18} className="text-forest-700" />
+              Lanjutkan dengan Nomor HP
+            </button>
+
+            <AnimatePresence initial={false}>
+              {showPhone && (
+                <motion.div
+                  key="phone-input"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-3 space-y-2">
+                    <input
+                      type="tel"
+                      placeholder="+62 812 3456 7890"
+                      className="w-full border border-[#E8DEC4] rounded-xl px-4 py-3 text-sm text-forest-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 placeholder:text-forest-900/30"
+                    />
+                    {/* TODO: integrate Twilio/WA Business API */}
+                    <p className="text-[11px] text-forest-900/50 text-center">
+                      OTP akan dikirim via WhatsApp
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="mt-6 flex items-center gap-2 justify-center text-xs text-forest-900/60">
             <ShieldCheck size={14} className="text-forest-700" />
             Data kamu dienkripsi & tidak akan dibagikan.
+          </div>
+
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-center">
+            <p className="text-[12px] text-amber-800">
+              💰 Rata-rata pengguna aktif mendapat{' '}
+              <strong>Rp 87.000/bulan</strong>
+            </p>
           </div>
 
           <p className="mt-8 text-[11px] text-center text-forest-900/50 leading-relaxed">

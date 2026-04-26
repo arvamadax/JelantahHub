@@ -20,7 +20,12 @@ export const HeroCalculator: React.FC = () => {
   const fillPct = ((liters - MIN_L) / (MAX_L - MIN_L)) * 100;
 
   return (
-    <div className="bg-white rounded-3xl p-7 border border-[#E8DEC4] shadow-[var(--shadow-lg)]">
+    <div className="relative bg-white rounded-3xl p-7 border border-[#E8DEC4] shadow-[var(--shadow-lg)]">
+      {/* Subtle bridge to hero text on desktop */}
+      <div
+        aria-hidden="true"
+        className="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 w-4 h-px bg-[#E8DEC4]"
+      />
       {/* Scoped slider pseudo-element styles — native <input type="range">
           can't be styled via Tailwind utilities for ::thumb / ::track. */}
       <style>{`

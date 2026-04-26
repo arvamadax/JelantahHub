@@ -7,38 +7,279 @@ import {
   Truck,
   Clock,
   Zap,
-  ChevronRight,
+  Search,
+  MapPin,
 } from 'lucide-react';
 import { HeroCalculator } from './landing/HeroCalculator';
 
-const PROOF_STATS = [
+type ProofStat = {
+  label: string;
+  raw: number;
+  suffix?: string;
+  prefix?: string;
+  sub: string;
+  formatted?: boolean;
+  context?: string;
+};
+
+const PROOF_STATS: ProofStat[] = [
   {
     label: 'Jelantah terkumpul',
-    number: '14.832 L',
+    raw: 14832,
+    suffix: ' L',
     sub: 'sejak Januari 2026',
   },
   {
     label: 'Diproses jadi biofuel',
-    number: '11.865 L',
+    raw: 11865,
+    suffix: ' L',
     sub: 'efisiensi 79,9%',
+    context: '= 594 L solar setara',
   },
   {
     label: 'Karbon dihindari',
-    number: '31,4 ton CO₂',
+    raw: 31,
+    suffix: ',4 ton CO₂',
     sub: 'setara 134 pohon/tahun',
+    context: '≈ 7 mobil tak jalan setahun',
   },
   {
     label: 'Kembali ke warga',
-    number: 'Rp 74.160.000',
+    raw: 74160000,
+    prefix: 'Rp ',
     sub: 'ke 1.386 keluarga aktif',
+    formatted: true,
   },
 ];
+
+const idFormatter = new Intl.NumberFormat('id-ID');
+
+type Testimonial = {
+  initials: string;
+  name: string;
+  meta: string;
+  badge: string;
+  color: string;
+  textColor?: string;
+  quote: string;
+};
+
+const TESTIMONIALS: Testimonial[] = [
+  {
+    initials: 'SR',
+    name: 'Ibu Sari R.',
+    meta: 'Bandung · Ibu Rumah Tangga',
+    badge: '82 L disetor',
+    color: 'bg-forest-700',
+    quote:
+      'Awalnya ragu, tapi setelah coba setor pertama langsung dapat poin bonus. Sekarang udah rutin tiap minggu, lumayan banget buat tambah saldo GoPay.',
+  },
+  {
+    initials: 'BP',
+    name: 'Pak Budi P.',
+    meta: 'Malang · Pemilik Warung Makan',
+    badge: '210 L disetor',
+    color: 'bg-amber-500',
+    quote:
+      'Warung saya tiap hari ada sisa jelantah. Dulu dibuang begitu aja, sekarang malah jadi pemasukan tambahan. Proses jemputnya cepat, H+1 sudah diambil.',
+  },
+  {
+    initials: 'DM',
+    name: 'Dewi M.',
+    meta: 'Surabaya · Mahasiswa',
+    badge: '35 L disetor',
+    color: 'bg-forest-200',
+    textColor: 'text-forest-900',
+    quote:
+      'Yang paling suka itu bisa lihat dampak karbonnya langsung. Jadi lebih sadar betapa banyak yang bisa dikurangi dari hal kecil di dapur.',
+  },
+];
+
+type CollectionNode = {
+  name: string;
+  addr: string;
+  dist: string;
+  open: boolean;
+};
+
+const SAMPLE_NODES: CollectionNode[] = [
+  { name: 'Bank Sampah Melati', addr: 'Jl. Cijaura Hilir No. 12, Bandung', dist: '1.2 km', open: true },
+  { name: 'Pos Kumpul RT 04 RW 02', addr: 'Perum Griya Asri Blok C, Bandung', dist: '0.8 km', open: true },
+  { name: 'Warung Bu Tejo', addr: 'Jl. Terusan Buah Batu No. 45, Bandung', dist: '3.5 km', open: false },
+];
+
+const KOTA_LIST = ['Bandung', 'Malang', 'Surabaya', 'Jakarta', 'Yogyakarta', 'Semarang'];
+
+function useCountUp(target: number, duration: number, trigger: boolean): number {
+  const [val, setVal] = React.useState(0);
+  React.useEffect(() => {
+    if (!trigger) return;
+    let frame = 0;
+    let start: number | null = null;
+    const step = (ts: number) => {
+      if (start === null) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      setVal(Math.round(p * target));
+      if (p < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [trigger, target, duration]);
+  return val;
+}
+
+const StatNumber: React.FC<{ stat: ProofStat; trigger: boolean }> = ({ stat, trigger }) => {
+  const value = useCountUp(stat.raw, 1400, trigger);
+  const display = stat.formatted ? idFormatter.format(value) : String(value);
+  return (
+    <p className="font-display font-extrabold tabular-nums text-[clamp(1.5rem,2vw+0.75rem,2.25rem)] leading-tight text-forest-900">
+      {stat.prefix ?? ''}
+      {display}
+      {stat.suffix ?? ''}
+    </p>
+  );
+};
+
+const PetaTitikSetor: React.FC = () => {
+  const [activeKota, setActiveKota] = React.useState<string>('Bandung');
+
+  return (
+    <section id="peta" className="py-20 md:py-24 bg-cream-100">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+          {/* LEFT: search + filter + nodes */}
+          <div>
+            <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
+              TITIK SETOR DI SEKITARMU
+            </p>
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl tracking-tight text-forest-900">
+              Cari titik setor terdekat.
+            </h2>
+            <p className="mt-3 text-forest-900/70 max-w-prose">
+              Bank sampah, pos kumpul, atau warung mitra — cek mana yang paling
+              dekat dengan rumahmu.
+            </p>
+
+            {/* Search */}
+            <div className="mt-6 relative">
+              <Search
+                size={16}
+                aria-hidden="true"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-forest-900/40"
+              />
+              <input
+                type="search"
+                placeholder="Cari berdasarkan nama atau alamat…"
+                aria-label="Cari titik setor"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-[#E8DEC4] rounded-xl text-sm text-forest-900 placeholder:text-forest-900/40 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+              />
+            </div>
+
+            {/* Kota chips (cosmetic) */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {KOTA_LIST.map((kota) => {
+                const active = kota === activeKota;
+                return (
+                  <button
+                    key={kota}
+                    type="button"
+                    onClick={() => setActiveKota(kota)}
+                    className={
+                      active
+                        ? 'px-3 py-1.5 rounded-full text-[12px] font-semibold bg-forest-700 text-cream-50 transition-colors duration-150'
+                        : 'px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white border border-[#E8DEC4] text-forest-900/70 hover:border-forest-200 transition-colors duration-150'
+                    }
+                  >
+                    {kota}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Node list */}
+            <ul className="mt-6 space-y-3">
+              {SAMPLE_NODES.map((node) => (
+                <li
+                  key={node.name}
+                  className="flex items-start justify-between gap-4 bg-white border border-[#E8DEC4] rounded-xl p-4"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-forest-900 text-[15px] truncate">
+                      {node.name}
+                    </p>
+                    <p className="text-[13px] text-forest-900/60 mt-0.5">
+                      {node.addr}
+                    </p>
+                    <p className="text-[12px] text-forest-900/40 mt-1">
+                      {node.dist} dari kamu
+                    </p>
+                  </div>
+                  <span
+                    className={
+                      node.open
+                        ? 'shrink-0 bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-1 rounded-full'
+                        : 'shrink-0 bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-1 rounded-full'
+                    }
+                  >
+                    {node.open ? 'BUKA' : 'TUTUP'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="#mitra"
+              className="mt-5 inline-flex items-center gap-1 text-amber-700 font-semibold text-sm hover:text-amber-800 transition-colors duration-150"
+            >
+              Tidak ada di kotamu? Daftar jadi Mitra Node
+              <ArrowRight size={14} />
+            </a>
+          </div>
+
+          {/* RIGHT: map placeholder */}
+          {/* TODO: replace with Leaflet map */}
+          <div className="bg-forest-50 border border-[#E8DEC4] rounded-2xl h-72 md:h-[480px] flex flex-col items-center justify-center text-center px-6">
+            <MapPin size={32} className="text-forest-700/60 mb-3" aria-hidden="true" />
+            <p className="font-display font-bold text-forest-900">
+              Peta interaktif akan tersedia
+            </p>
+            <p className="text-[13px] text-forest-900/50 mt-1">
+              Dukungan Leaflet.js untuk menampilkan node terdekat.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 interface LandingPageProps {
   onNavigateAuth: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
+  const dampakRef = React.useRef<HTMLDivElement | null>(null);
+  const [dampakTriggered, setDampakTriggered] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = dampakRef.current;
+    if (!node || dampakTriggered) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setDampakTriggered(true);
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: '-80px' },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [dampakTriggered]);
+
   return (
     <div className="min-h-[100dvh] w-full bg-slate-50 text-slate-900 flex flex-col">
       {/* Navbar */}
@@ -150,6 +391,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 </a>
               </motion.div>
 
+              {/* Social proof badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.32 }}
+                className="mt-4 inline-flex items-center gap-2 bg-white border border-[#E8DEC4] rounded-full px-4 py-2 text-[13px] text-forest-900/70 shadow-[var(--shadow-md)]"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                <span>
+                  <strong className="text-forest-900">1.386 keluarga</strong> sudah bergabung bulan ini
+                </span>
+              </motion.div>
+
               {/* Trust strip */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -207,7 +461,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_32px_1fr_32px_1fr] gap-6 md:gap-0">
             {/* Card 1 — Kumpulkan (AMBER) */}
             <motion.article
               initial={{ opacity: 0, y: 16 }}
@@ -232,6 +486,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 Cukup 30 detik per minggu
               </div>
             </motion.article>
+
+            {/* Arrow connector 1→2 */}
+            <div className="hidden md:flex items-center justify-center">
+              <div className="relative w-8">
+                <div className="h-px w-full bg-amber-300" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-amber-400" />
+              </div>
+            </div>
 
             {/* Card 2 — Setor (FOREST) */}
             <motion.article
@@ -259,37 +521,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               </div>
             </motion.article>
 
-            {/* Card 3 — Cairkan Poin (DARK) */}
+            {/* Arrow connector 2→3 */}
+            <div className="hidden md:flex items-center justify-center">
+              <div className="relative w-8">
+                <div className="h-px w-full bg-amber-300" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-amber-400" />
+              </div>
+            </div>
+
+            {/* Card 3 — Cairkan Poin (UNIFIED, AMBER-OUTLINED) */}
             <motion.article
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.5, delay: 0.16 }}
-              className="relative overflow-hidden bg-ink-900 text-cream-50 rounded-2xl p-7 min-h-[320px] flex flex-col"
+              className="relative overflow-hidden bg-white border-2 border-amber-500 rounded-2xl p-7 min-h-[320px] flex flex-col shadow-[var(--shadow-amber)]"
             >
-              <span className="absolute top-5 right-6 font-display font-black text-[88px] leading-none text-cream-50/10 select-none pointer-events-none">
+              <span className="absolute top-5 right-6 font-display font-black text-[88px] leading-none text-amber-200/60 select-none pointer-events-none">
                 03
               </span>
               <div className="relative grid grid-cols-2 gap-2 mb-5">
                 {['GoPay', 'DANA', 'OVO', 'BSI'].map((label) => (
                   <div
                     key={label}
-                    className="bg-cream-50/5 border border-cream-50/10 rounded-lg p-3 flex items-center justify-center text-cream-50 text-sm font-semibold tracking-tight"
+                    className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center justify-center text-forest-900 text-sm font-semibold tracking-tight"
                   >
                     {label}
                   </div>
                 ))}
               </div>
-              <h3 className="relative font-display font-extrabold text-xl text-cream-50 mb-2">
+              <h3 className="relative font-display font-extrabold text-xl text-forest-900 mb-2">
                 Cairkan Poin
               </h3>
-              <p className="relative text-sm text-cream-50/75 leading-relaxed">
+              <p className="relative text-sm text-forest-900/70 leading-relaxed">
                 Tukar ke saldo digital, pulsa, atau donasi sosial.
-                <span className="text-amber-400 font-semibold">
+                <span className="text-amber-600 font-semibold">
                   {' '}Minimal Rp 10.000.
                 </span>
               </p>
-              <div className="relative mt-auto pt-4 border-t border-cream-50/15 flex items-center gap-2 text-cream-50/70 text-[13px]">
+              <div className="relative mt-auto pt-4 border-t border-[#E8DEC4] flex items-center gap-2 text-forest-700/60 text-[13px]">
                 <Zap size={14} />
                 {'Cair dalam < 5 menit'}
               </div>
@@ -298,9 +568,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
         </div>
       </section>
 
+      <PetaTitikSetor />
+
       {/* Impact Proof */}
-      <section id="dampak" className="py-20 md:py-24 bg-cream-100">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+      <section id="dampak" className="py-20 md:py-24 bg-cream-100 border-t border-[#E8DEC4]">
+        <div ref={dampakRef} className="max-w-[1200px] mx-auto px-4 md:px-6">
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
@@ -311,8 +583,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
             </h2>
           </div>
 
-          {/* Chain */}
-          <div className="mt-12 grid md:grid-cols-4 gap-4">
+          {/* Target progress bar */}
+          <div className="mt-12 mb-10 bg-white border border-[#E8DEC4] rounded-2xl p-6">
+            <div className="flex justify-between items-baseline mb-3">
+              <p className="text-sm text-forest-900/60">
+                Target 2026:{' '}
+                <strong className="text-forest-900">50.000 L</strong> jelantah
+                terkumpul
+              </p>
+              <span className="text-amber-600 font-bold text-sm">29,7%</span>
+            </div>
+            <div className="h-2 bg-cream-200 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-amber-500 rounded-full"
+                initial={{ width: 0 }}
+                whileInView={{ width: '29.7%' }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+              />
+            </div>
+            <p className="text-[12px] text-forest-900/40 mt-2 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
+              Diperbarui real-time · 14.832 L dari 50.000 L
+            </p>
+          </div>
+
+          {/* Stats grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {PROOF_STATS.map((stat, idx) => (
               <motion.div
                 key={stat.label}
@@ -325,20 +622,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 <p className="text-[13px] text-forest-900/50 font-medium mb-2">
                   {stat.label}
                 </p>
-                <p className="font-display font-extrabold tabular-nums text-[clamp(1.5rem,2vw+0.75rem,2.25rem)] leading-tight text-forest-900">
-                  {stat.number}
-                </p>
+                <StatNumber stat={stat} trigger={dampakTriggered} />
                 <p className="text-[13px] text-forest-900/50 mt-1">
                   {stat.sub}
                 </p>
-
-                {/* Chevron connector — between cards on desktop only */}
-                {idx < PROOF_STATS.length - 1 && (
-                  <ChevronRight
-                    size={20}
-                    aria-hidden="true"
-                    className="hidden md:block absolute top-1/2 -translate-y-1/2 right-[-18px] text-forest-300 z-10"
-                  />
+                {stat.context && (
+                  <p className="text-[12px] text-amber-700 font-semibold mt-2">
+                    {stat.context}
+                  </p>
                 )}
               </motion.div>
             ))}
@@ -346,10 +637,82 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section id="testimonial" className="bg-white border-y border-[#E8DEC4] py-20 md:py-24">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+          <div className="text-center max-w-2xl mx-auto">
+            <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
+              KATA PENGGUNA
+            </p>
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl tracking-tight text-forest-900">
+              Cerita dari dapur, warung, dan kos.
+            </h2>
+            <p className="mt-3 text-amber-700 font-semibold text-sm">
+              ★★★★★ 4.8/5 · 1.200+ ulasan
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TESTIMONIALS.map((t, idx) => (
+              <motion.article
+                key={t.name}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.45, delay: idx * 0.08 }}
+                className="bg-cream-50 border border-[#E8DEC4] rounded-2xl p-6 flex flex-col"
+              >
+                <p className="text-forest-900/80 text-[15px] leading-relaxed italic">
+                  “{t.quote}”
+                </p>
+                <div className="mt-5 pt-5 border-t border-[#E8DEC4] flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-full font-bold ${t.textColor ?? 'text-cream-50'} text-sm flex items-center justify-center ${t.color}`}
+                    aria-hidden="true"
+                  >
+                    {t.initials}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-forest-900 text-sm truncate">
+                      {t.name}
+                    </p>
+                    <p className="text-[12px] text-forest-900/50 truncate">
+                      {t.meta}
+                    </p>
+                  </div>
+                  <span className="shrink-0 bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-1 rounded-full">
+                    {t.badge}
+                  </span>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mini-CTA banner */}
+      <div className="bg-forest-700 py-12 px-4">
+        <div className="max-w-[1200px] mx-auto text-center">
+          <h2 className="font-display font-extrabold text-2xl md:text-3xl text-cream-50 mb-2">
+            Mulai setor hari ini — gratis, tanpa ribet.
+          </h2>
+          <p className="text-cream-50/60 text-sm mb-6">
+            Daftar 2 menit. Tidak perlu kartu kredit. Langsung dapat +1.000 poin
+            bonus.
+          </p>
+          <button
+            onClick={onNavigateAuth}
+            className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-amber-500 hover:bg-amber-600 text-cream-50 font-bold shadow-[var(--shadow-amber)] transition-colors duration-150"
+          >
+            Daftar Gratis Sekarang <ArrowRight size={16} />
+          </button>
+        </div>
+      </div>
+
       <footer className="border-t border-[#E8DEC4] bg-cream-100 py-10">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Col 1 — Logo + tagline */}
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1.5fr] gap-8">
+            {/* Col 1 — Logo + tagline + social */}
             <div>
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-lg">
@@ -362,10 +725,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               <p className="text-sm text-forest-900/60 mt-2">
                 Sirkular dari dapur ke kilang.
               </p>
+              <div className="mt-4 flex gap-2">
+                {(['ig', 'tk', 'wa'] as const).map((s) => (
+                  <a
+                    key={s}
+                    href="#"
+                    aria-label={`JelantahHub di ${s}`}
+                    className="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center text-forest-700 text-[11px] font-bold hover:bg-forest-100 transition-colors"
+                  >
+                    {s}
+                  </a>
+                ))}
+              </div>
             </div>
 
-            {/* Col 2 — Links */}
-            <nav aria-label="Tautan footer" className="flex flex-col gap-2 text-sm">
+            {/* Col 2 — Produk */}
+            <nav aria-label="Produk" className="flex flex-col gap-2 text-sm">
+              <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-forest-900/50 mb-1">
+                PRODUK
+              </p>
               <a
                 href="#cara-kerja"
                 className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150"
@@ -392,22 +770,53 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               </a>
             </nav>
 
-            {/* Col 3 — Kontak */}
-            <div className="flex flex-col gap-2 text-sm text-forest-900/70">
-              <a
-                href="https://instagram.com/jelantahhub"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-fit hover:text-forest-900 transition-colors duration-150"
-              >
-                @jelantahhub
+            {/* Col 3 — Perusahaan */}
+            <nav aria-label="Perusahaan" className="flex flex-col gap-2 text-sm">
+              <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-forest-900/50 mb-1">
+                PERUSAHAAN
+              </p>
+              <a href="#" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
+                Tentang
+              </a>
+              <a href="#mitra" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
+                Mitra
+              </a>
+              <a href="#" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
+                Karir
               </a>
               <a
                 href="mailto:halo@jelantahhub.id"
-                className="w-fit hover:text-forest-900 transition-colors duration-150"
+                className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150"
               >
-                halo@jelantahhub.id
+                Kontak
               </a>
+            </nav>
+
+            {/* Col 4 — Newsletter */}
+            <div className="flex flex-col gap-2 text-sm">
+              <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-forest-900/50 mb-1">
+                UPDATE BULANAN
+              </p>
+              <p className="text-forest-900/60 text-[13px]">
+                Cerita dampak & insight sirkular ekonomi, langsung ke inboxmu.
+              </p>
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="mt-2 flex gap-2"
+              >
+                <input
+                  type="email"
+                  placeholder="email@kamu.com"
+                  aria-label="Email untuk update bulanan"
+                  className="flex-1 min-w-0 bg-white border border-[#E8DEC4] rounded-lg px-3 py-2 text-sm text-forest-900 placeholder:text-forest-900/30 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+                />
+                <button
+                  type="submit"
+                  className="bg-amber-500 hover:bg-amber-600 text-cream-50 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-150"
+                >
+                  Ikut
+                </button>
+              </form>
             </div>
           </div>
 
