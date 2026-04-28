@@ -41,7 +41,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
       </div>
       
       <div className="flex items-center gap-3">
-        <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full active:bg-slate-200 transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center">
+        <button className="p-2 text-forest-900/60 hover:bg-cream-200 rounded-full active:bg-cream-300 transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center">
           <Bell size={20} />
           <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
         </button>
@@ -49,12 +49,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
         <div className="relative">
           <button 
             onClick={() => setShowMenu(!showMenu)} 
-            className="flex items-center gap-2 rounded-full hover:bg-slate-50 transition-colors focus:ring-2 focus:ring-emerald-500 p-1 min-h-[44px] min-w-[44px]"
+            className="flex items-center gap-2 rounded-full hover:bg-cream-50 transition-colors focus:ring-2 focus:ring-amber-500 p-1 min-h-[44px] min-w-[44px]"
           >
             <img 
               src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop"} 
               alt="Profile" 
-              className="w-8 h-8 rounded-full border-2 border-emerald-100 object-cover"
+              className="w-8 h-8 rounded-full border-2 border-forest-100 object-cover"
             />
           </button>
 
@@ -64,15 +64,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 origin-top-right"
+                className="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-[#E8DEC4] py-2 origin-top-right"
               >
-                <div className="px-4 py-2 border-b border-slate-50">
-                  <p className="text-sm font-bold text-slate-800">{userData?.name || 'User'}</p>
-                  <p className="text-[10px] text-emerald-600 font-medium">Verified Eco-Member</p>
+                <div className="px-4 py-2 border-b border-[#E8DEC4]">
+                  <p className="text-sm font-bold text-forest-900">{userData?.name || 'User'}</p>
+                  <p className="text-xs text-forest-700 font-medium">Verified Eco-Member</p>
                 </div>
                 <button 
                   onClick={() => { setShowMenu(false); onLogout(); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-red-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-sm font-medium min-h-[44px]"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-forest-900/70 hover:text-red-500 hover:bg-cream-50 active:bg-cream-200 transition-colors text-sm font-medium min-h-[44px]"
                 >
                   <LogOut size={16} />
                   Sign Out

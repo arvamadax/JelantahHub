@@ -150,7 +150,7 @@ const TitikCard: React.FC<{ titik: Titik }> = ({ titik }) => {
             <h3 className="font-display font-bold text-forest-900 text-[15px] leading-tight">
               {titik.nama}
             </h3>
-            <p className="text-[12px] text-forest-900/50 mt-0.5 leading-snug">
+            <p className="text-xs text-forest-900/65 mt-0.5 leading-snug">
               {titik.alamat}
             </p>
           </div>
@@ -187,7 +187,7 @@ const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
   const label = status === 'open' ? '● BUKA' : '● TUTUP';
   return (
     <span
-      className={`shrink-0 whitespace-nowrap text-[11px] font-bold px-2.5 py-1 rounded-full ${className}`}
+      className={`shrink-0 whitespace-nowrap text-xs font-bold px-2.5 py-1 rounded-full ${className}`}
     >
       {label}
     </span>
@@ -196,7 +196,7 @@ const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
 
 const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div>
-    <p className="text-[11px] text-forest-900/40">{label}</p>
+    <p className="text-xs text-forest-900/60">{label}</p>
     <p className="font-semibold text-forest-900 text-[13px] mt-0.5">{value}</p>
   </div>
 );

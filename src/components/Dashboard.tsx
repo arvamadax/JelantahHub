@@ -77,19 +77,19 @@ export const Dashboard: React.FC = () => {
               </motion.section>
 
               {/* QR Widget Mini */}
-              <section className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex items-center justify-between active:bg-slate-50 transition-colors min-h-[44px] cursor-pointer">
+              <section className="bg-white rounded-2xl border border-[#E8DEC4] p-4 shadow-sm flex items-center justify-between active:bg-cream-50 transition-colors min-h-[44px] cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+                  <div className="bg-forest-50 p-2 rounded-lg text-forest-700">
                     <QrCode size={20} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-800">Tampilkan QR</p>
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-sm font-bold text-forest-900">Tampilkan QR</p>
+                    <p className="text-xs text-forest-900/60">
                       ID: JH-{user.uid.substring(0, 4).toUpperCase()}
                     </p>
                   </div>
                 </div>
-                <ArrowUpRight size={16} className="text-slate-400" />
+                <ArrowUpRight size={16} className="text-forest-900/45" />
               </section>
             </div>
 
@@ -98,10 +98,10 @@ export const Dashboard: React.FC = () => {
               {/* Nearby Nodes */}
               <section>
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h3 className="text-base font-bold text-slate-800 font-display">Titik Kumpul</h3>
+                  <h3 className="text-base font-bold text-forest-900 font-display">Titik Kumpul</h3>
                   <button
                     onClick={() => setTab('map')}
-                    className="text-amber-700 hover:text-amber-800 text-[11px] font-bold p-1 rounded min-h-[30px] min-w-[30px] transition-colors duration-150"
+                    className="text-amber-700 hover:text-amber-800 text-xs font-bold p-1 rounded min-h-[30px] min-w-[30px] transition-colors duration-150"
                   >
                     Lihat Peta
                   </button>
@@ -123,10 +123,10 @@ export const Dashboard: React.FC = () => {
               {/* Transactions */}
               <section className="pb-4">
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h3 className="text-base font-bold text-slate-800 font-display">Riwayat</h3>
+                  <h3 className="text-base font-bold text-forest-900 font-display">Riwayat</h3>
                 </div>
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                  <ul className="divide-y divide-slate-50">
+                <div className="bg-white rounded-2xl border border-[#E8DEC4] shadow-sm overflow-hidden">
+                  <ul className="divide-y divide-[#E8DEC4]">
                     {transactions.length > 0 ? (
                       transactions.slice(0, 3).map((tx) => (
                         <ActivityItem
@@ -139,13 +139,13 @@ export const Dashboard: React.FC = () => {
                         />
                       ))
                     ) : (
-                      <div className="p-6 text-center text-slate-400 text-sm">
+                      <div className="p-6 text-center text-forest-900/45 text-sm">
                         Belum ada transaksi.
                       </div>
                     )}
                   </ul>
                   {transactions.length > 0 && (
-                    <div className="p-3 bg-slate-50 text-center border-t border-slate-100">
+                    <div className="p-3 bg-cream-50 text-center border-t border-[#E8DEC4]">
                       <button
                         onClick={() => setTab('riwayat')}
                         className="text-amber-700 hover:text-amber-800 text-xs font-bold min-h-[30px] px-4 transition-colors duration-150"

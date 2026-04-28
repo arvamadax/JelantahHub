@@ -95,7 +95,7 @@ export const RiwayatPage: React.FC = () => {
 
 const SummaryCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="bg-white border border-[#E8DEC4] rounded-xl p-4">
-    <p className="text-[12px] text-forest-900/50">{label}</p>
+    <p className="text-xs text-forest-900/65">{label}</p>
     <p className="font-display font-extrabold text-forest-900 text-[1.5rem] leading-tight tabular-nums mt-1">
       {value}
     </p>
@@ -113,7 +113,7 @@ const RiwayatRow: React.FC<{ tx: RiwayatEntry }> = ({ tx }) => (
         <span className="font-semibold text-forest-900 text-sm truncate">
           {tx.lokasi}
         </span>
-        <span className="text-[12px] text-forest-900/50 tabular-nums">
+        <span className="text-xs text-forest-900/65 tabular-nums">
           {tx.tanggal} · {oneDecimalFormatter.format(tx.volume)} L
         </span>
       </div>
@@ -135,7 +135,7 @@ const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
       ? 'bg-amber-50 text-amber-700'
       : 'bg-cream-200 text-forest-900/50';
   return (
-    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${className}`}>
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${className}`}>
       {status}
     </span>
   );

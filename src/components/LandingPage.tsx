@@ -149,7 +149,7 @@ const PetaTitikSetor: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
           {/* LEFT: search + filter + nodes */}
           <div>
-            <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
+            <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
               TITIK SETOR DI SEKITARMU
             </p>
             <h2 className="font-display font-extrabold text-3xl md:text-4xl tracking-tight text-forest-900">
@@ -186,8 +186,8 @@ const PetaTitikSetor: React.FC = () => {
                     onClick={() => setActiveKota(kota)}
                     className={
                       active
-                        ? 'px-3 py-1.5 rounded-full text-[12px] font-semibold bg-forest-700 text-cream-50 transition-colors duration-150'
-                        : 'px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white border border-[#E8DEC4] text-forest-900/70 hover:border-forest-200 transition-colors duration-150'
+                        ? 'px-3 py-1.5 rounded-full text-xs font-semibold bg-forest-700 text-cream-50 transition-colors duration-150'
+                        : 'px-3 py-1.5 rounded-full text-xs font-semibold bg-white border border-[#E8DEC4] text-forest-900/70 hover:border-forest-200 transition-colors duration-150'
                     }
                   >
                     {kota}
@@ -218,7 +218,7 @@ const PetaTitikSetor: React.FC = () => {
                     className={
                       node.open
                         ? 'shrink-0 bg-forest-50 text-forest-700 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
-                        : 'shrink-0 bg-cream-200 text-forest-900/55 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
+                        : 'shrink-0 bg-cream-200 text-forest-900/60 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
                     }
                   >
                     {node.open ? 'BUKA' : 'TUTUP'}
@@ -346,7 +346,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.42 }}
-                className="inline-flex items-center gap-2 text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-6"
+                className="inline-flex items-center gap-2 text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-6"
               >
                 <span className="h-px w-8 bg-amber-500 inline-block" />
                 ECO-FINTECH PLATFORM SIRKULAR
@@ -502,7 +502,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
             {/* Arrow connector 1→2 */}
             <div className="hidden md:flex items-center justify-center">
               <div className="relative w-8">
-                <div className="h-px w-full bg-amber-300" />
+                <div className="h-px w-full bg-amber-200" />
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-amber-400" />
               </div>
             </div>
@@ -536,7 +536,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
             {/* Arrow connector 2→3 */}
             <div className="hidden md:flex items-center justify-center">
               <div className="relative w-8">
-                <div className="h-px w-full bg-amber-300" />
+                <div className="h-px w-full bg-amber-200" />
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-amber-400" />
               </div>
             </div>
@@ -610,7 +610,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
         <div ref={dampakRef} className="max-w-[1200px] mx-auto px-4 md:px-6">
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
+            <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
               DAMPAK NYATA, BUKAN JANJI
             </p>
             <h2 className="font-display font-extrabold text-forest-900 text-[clamp(1.75rem,3vw+0.5rem,2.75rem)] tracking-tight leading-[1.08]">
@@ -662,7 +662,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                   {stat.sub}
                 </p>
                 {stat.context && (
-                  <p className="text-[12px] text-amber-700 font-semibold mt-2">
+                  <p className="text-xs text-amber-700 font-semibold mt-2">
                     {stat.context}
                   </p>
                 )}
@@ -676,7 +676,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
       <section id="testimonial" className="bg-white border-y border-[#E8DEC4] pt-14 md:pt-16 pb-20 md:pb-24">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-amber-700 text-[12px] font-bold tracking-[0.12em] uppercase mb-3">
+            <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
               KATA PENGGUNA
             </p>
             <h2 className="font-display font-extrabold text-3xl md:text-4xl tracking-tight text-forest-900">

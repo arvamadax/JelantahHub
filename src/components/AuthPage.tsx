@@ -80,7 +80,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
 
             <div className="relative flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-[#E8DEC4]" />
-              <span className="text-[12px] text-forest-900/40">atau</span>
+              <span className="text-xs text-forest-900/60">atau</span>
               <div className="flex-1 h-px bg-[#E8DEC4]" />
             </div>
 
@@ -109,7 +109,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
                       className="w-full border border-[#E8DEC4] rounded-xl px-4 py-3 text-sm text-forest-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 placeholder:text-forest-900/30"
                     />
                     {/* TODO: integrate Twilio/WA Business API */}
-                    <p className="text-[11px] text-forest-900/50 text-center">
+                    <p className="text-xs text-forest-900/50 text-center">
                       OTP akan dikirim via WhatsApp
                     </p>
                   </div>
@@ -130,7 +130,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
             </p>
           </div>
 
-          <p className="mt-8 text-[11px] text-center text-forest-900/50 leading-relaxed">
+          <p className="mt-8 text-xs text-center text-forest-900/50 leading-relaxed">
             Dengan melanjutkan, kamu menyetujui{' '}
             <a href="#" className="text-amber-700 hover:text-amber-800 hover:underline">
               Syarat Layanan
