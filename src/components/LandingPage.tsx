@@ -210,15 +210,15 @@ const PetaTitikSetor: React.FC = () => {
                     <p className="text-[13px] text-forest-900/60 mt-0.5">
                       {node.addr}
                     </p>
-                    <p className="text-[12px] text-forest-900/40 mt-1">
+                    <p className="text-xs text-forest-900/60 mt-1">
                       {node.dist} dari kamu
                     </p>
                   </div>
                   <span
                     className={
                       node.open
-                        ? 'shrink-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
-                        : 'shrink-0 bg-slate-100 text-slate-500 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
+                        ? 'shrink-0 bg-forest-50 text-forest-700 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
+                        : 'shrink-0 bg-cream-200 text-forest-900/55 text-xs font-bold px-2.5 py-1 rounded-full tracking-wide'
                     }
                   >
                     {node.open ? 'BUKA' : 'TUTUP'}
@@ -249,15 +249,14 @@ const PetaTitikSetor: React.FC = () => {
               {['Bank Sampah', 'Warung Mitra', 'Pos RT'].map((tag) => (
                 <span
                   key={tag}
-                  className="bg-forest-100 text-forest-700 text-[11px] font-semibold px-3 py-1 rounded-full"
+                  className="bg-forest-100 text-forest-700 text-xs font-semibold px-3 py-1 rounded-full"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            {/* TODO: replace with Leaflet map */}
-            <p className="mt-4 text-[11px] text-forest-700/40">
-              Powered by Leaflet.js · Coming soon
+            <p className="mt-4 text-xs text-forest-700/60">
+              Peluncuran peta interaktif: Mei 2026
             </p>
           </div>
         </div>
@@ -294,7 +293,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
   }, [dampakTriggered]);
 
   return (
-    <div className="min-h-[100dvh] w-full bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-[100dvh] w-full bg-cream-100 text-forest-900 flex flex-col">
       {/* Navbar */}
       <header className="sticky top-0 z-40 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4]">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 md:px-6 h-full">
@@ -430,17 +429,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 <img
                   src="/logos/klhk.png"
                   alt="KLHK"
-                  className="h-7 w-auto max-w-[80px] opacity-75 mix-blend-multiply object-contain"
+                  className="h-8 w-auto max-w-[110px] object-contain"
                 />
                 <img
                   src="/logos/pertamina-nre.jpg"
                   alt="Pertamina NRE"
-                  className="h-7 w-auto max-w-[100px] opacity-75 mix-blend-multiply object-contain"
+                  className="h-8 w-auto max-w-[110px] object-contain"
                 />
                 <img
                   src="/logos/iyref.webp"
                   alt="IYREF 2026"
-                  className="h-7 w-auto max-w-[80px] opacity-75 mix-blend-multiply object-contain"
+                  className="h-8 w-auto max-w-[90px] object-contain"
                 />
               </motion.div>
             </div>
@@ -581,6 +580,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
         </div>
       </section>
 
+      {/* Mitra section */}
+      <section id="mitra" className="py-16 md:py-20 bg-white border-t border-[#E8DEC4]">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 text-center">
+          <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
+            UNTUK MITRA
+          </p>
+          <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-forest-900 max-w-2xl mx-auto">
+            Bank sampah, RT, atau warung? Daftar jadi titik setor.
+          </h2>
+          <p className="mt-4 text-forest-900/70 max-w-prose mx-auto">
+            Dapatkan komisi per liter terkumpul + alat pengukur gratis.
+            Onboarding 3 hari kerja.
+          </p>
+          <a
+            href="mailto:mitra@jelantahhub.id"
+            className="mt-8 inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 font-bold shadow-[var(--shadow-forest)] transition-colors duration-150"
+          >
+            Hubungi Tim Mitra
+            <ArrowRight size={16} />
+          </a>
+        </div>
+      </section>
+
       <PetaTitikSetor />
 
       {/* Impact Proof */}
@@ -615,7 +637,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                 transition={{ duration: 1.2, ease: 'easeOut' }}
               />
             </div>
-            <p className="text-[12px] text-forest-900/40 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-forest-900/60 mt-2 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
               Diperbarui real-time · 14.832 L dari 50.000 L
             </p>
@@ -689,11 +711,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
                     <p className="font-semibold text-forest-900 text-sm truncate">
                       {t.name}
                     </p>
-                    <p className="text-[12px] text-forest-900/50 truncate">
+                    <p className="text-xs text-forest-900/65 truncate">
                       {t.meta}
                     </p>
                   </div>
-                  <span className="shrink-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+                  <span className="shrink-0 bg-forest-50 text-forest-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
                     {t.badge}
                   </span>
                 </div>

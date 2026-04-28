@@ -89,7 +89,7 @@ export const HeroCalculator: React.FC = () => {
       `}</style>
 
       {/* 1. Overline */}
-      <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-amber-700">
+      <p className="text-xs font-bold tracking-[0.12em] uppercase text-amber-700">
         HITUNG DAMPAKMU
       </p>
 
@@ -120,7 +120,7 @@ export const HeroCalculator: React.FC = () => {
               var(--color-cream-300) 100%)`,
           }}
         />
-        <div className="mt-2 flex justify-between text-[12px] text-forest-900/40 tabular-nums">
+        <div className="mt-2 flex justify-between text-xs text-forest-900/60 tabular-nums">
           <span>1 L</span>
           <span>25 L</span>
           <span>50 L</span>
@@ -130,7 +130,7 @@ export const HeroCalculator: React.FC = () => {
       {/* 4. Output grid */}
       <div
         aria-live="polite"
-        className="grid grid-cols-2 gap-4 mt-6"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6"
       >
         {/* Saldo masuk */}
         <div className="bg-cream-50 border border-[#E8DEC4] rounded-xl p-4">
@@ -138,7 +138,7 @@ export const HeroCalculator: React.FC = () => {
           <p className="font-display font-extrabold tabular-nums text-[2rem] leading-none text-forest-700 mt-1">
             Rp {rpFormatter.format(rpPerMonth)}
           </p>
-          <p className="text-[12px] text-forest-900/40 mt-1">/bulan</p>
+          <p className="text-xs text-forest-900/60 mt-1">/bulan</p>
         </div>
 
         {/* Karbon dihindari */}
@@ -147,7 +147,7 @@ export const HeroCalculator: React.FC = () => {
           <p className="font-display font-extrabold tabular-nums text-[2rem] leading-none text-amber-600 mt-1">
             {co2Formatter.format(kgCO2)} kg CO₂
           </p>
-          <p className="text-[12px] text-forest-900/40 mt-1">/bulan</p>
+          <p className="text-xs text-forest-900/60 mt-1">/bulan</p>
         </div>
       </div>
 

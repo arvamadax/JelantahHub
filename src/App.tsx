@@ -20,7 +20,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-slate-50 text-emerald-600">
+      <div className="w-full h-screen flex items-center justify-center bg-cream-100 text-forest-700">
         <div className="animate-pulse flex flex-col items-center">
           <Leaf size={40} className="mb-4" />
           <p className="font-bold">Memuat...</p>
