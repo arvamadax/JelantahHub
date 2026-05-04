@@ -298,9 +298,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
       <header className="sticky top-0 z-40 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4]">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 md:px-6 h-full">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-lg">
-              J
-            </div>
+            <img
+              src="/logos/jelantahhub-256.png"
+              alt="JelantahHub"
+              className="w-10 h-10 object-contain"
+              width={40}
+              height={40}
+            />
             <span className="font-display font-extrabold text-lg tracking-tight text-forest-900">
               JelantahHub
             </span>
@@ -750,9 +754,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
             {/* Col 1 — Logo + tagline + social */}
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-lg">
-                  J
-                </div>
+                <img
+                  src="/logos/jelantahhub-256.png"
+                  alt="JelantahHub"
+                  className="w-10 h-10 object-contain"
+                  width={40}
+                  height={40}
+                />
                 <span className="font-display font-extrabold text-lg tracking-tight text-forest-900">
                   JelantahHub
                 </span>

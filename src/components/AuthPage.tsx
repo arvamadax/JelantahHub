@@ -23,9 +23,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
             Kembali
           </button>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-lg">
-              J
-            </div>
+            <img
+              src="/logos/jelantahhub-256.png"
+              alt="JelantahHub"
+              className="w-10 h-10 object-contain"
+              width={40}
+              height={40}
+            />
             <span className="font-display font-extrabold tracking-tight text-forest-900">
               JelantahHub
             </span>
@@ -41,9 +45,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
           className="w-full max-w-md bg-white rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] p-8"
         >
           <div className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-forest-700 text-cream-50 flex items-center justify-center font-display font-black text-3xl mx-auto mb-6">
-              J
-            </div>
+            <img
+              src="/logos/jelantahhub-256.png"
+              alt="JelantahHub"
+              className="w-20 h-20 object-contain mx-auto mb-6"
+              width={80}
+              height={80}
+            />
             <h1 className="font-display font-extrabold text-2xl tracking-tight text-forest-900">
               Masuk ke JelantahHub
             </h1>

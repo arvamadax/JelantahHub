@@ -22,9 +22,13 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
   return (
     <header className="absolute top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4] z-40 flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-cream-50 font-display font-bold text-lg">
-          J
-        </div>
+        <img
+          src="/logos/jelantahhub-256.png"
+          alt="JelantahHub"
+          className="w-9 h-9 object-contain"
+          width={36}
+          height={36}
+        />
         <h1 className="text-xl font-extrabold text-forest-900 tracking-tighter leading-none hidden sm:block">JelantahHub</h1>
       </div>
 
