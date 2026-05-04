@@ -40,3 +40,24 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# AI tooling artifacts (Claude Code, Cursor, etc.)
+.claude/
+.cursor/
+CLAUDE.md
+*.skill
+
+# Internal audit / scratch / draft files
+audit/
+docs/DRAFT_*
+docs/draft_*
+*.draft.md
+SCRATCH.md
+NOTES.md
+
+# Test rules harness (broken — references DRAFT_firestore.rules)
+firestore.rules.test.ts
+
+# Misc temporary / duplicate assets
+JelantahHub*.png
+JelantahHub*.jpg
