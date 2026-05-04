@@ -17,7 +17,7 @@ export const NearbyNodeCard = ({ title, distance, isOpen, icon: Icon }: { title:
         isOpen ? 'bg-amber-50 text-amber-700' : 'bg-cream-200 text-forest-900/40'
       }`}>
         <span className={`w-1 h-1 rounded-full ${isOpen ? 'bg-amber-500' : 'bg-forest-900/30'}`}></span>
-        {isOpen ? 'Open' : 'Closed'}
+        {isOpen ? 'BUKA' : 'TUTUP'}
       </span>
     </div>
   </div>

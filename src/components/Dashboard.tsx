@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, Utensils, ArrowUpRight, QrCode } from 'lucide-react';
+import { Store, Utensils, ArrowUpRight, QrCode, Droplets } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useFirebaseLogic } from '../hooks/useFirebaseLogic';
@@ -38,7 +38,7 @@ export const Dashboard: React.FC = () => {
       <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-24 md:pb-12 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
           {tab === 'riwayat' ? (
-            <RiwayatPage />
+            <RiwayatPage transactions={transactions} />
           ) : tab === 'map' ? (
             <TitikKumpulPage />
           ) : (
@@ -139,8 +139,18 @@ export const Dashboard: React.FC = () => {
                         />
                       ))
                     ) : (
-                      <div className="p-6 text-center text-forest-900/45 text-sm">
-                        Belum ada transaksi.
+                      <div className="flex flex-col items-center justify-center py-8 gap-3">
+                        <div className="bg-amber-50 rounded-full p-3">
+                          <Droplets size={24} className="text-amber-400" />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-forest-900">
+                            Belum ada setoran
+                          </p>
+                          <p className="text-xs text-forest-900/60 mt-1">
+                            Tekan tombol <strong>Setor</strong> untuk mulai kumpulkan poin.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </ul>

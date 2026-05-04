@@ -1,46 +1,50 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Droplets } from 'lucide-react';
-
-type Status = 'Verified' | 'Pending';
-
-interface RiwayatEntry {
-  id: number;
-  tanggal: string;
-  lokasi: string;
-  volume: number;
-  poin: number;
-  status: Status;
-}
-
-const mockRiwayat: RiwayatEntry[] = [
-  { id: 1, tanggal: '24 Apr 2026', lokasi: 'Bank Sampah Melati', volume: 3.2, poin: 160, status: 'Verified' },
-  { id: 2, tanggal: '21 Apr 2026', lokasi: 'Warung Bu Tejo', volume: 5.0, poin: 250, status: 'Verified' },
-  { id: 3, tanggal: '18 Apr 2026', lokasi: 'Bank Sampah Melati', volume: 2.5, poin: 125, status: 'Verified' },
-  { id: 4, tanggal: '14 Apr 2026', lokasi: 'Pos Kumpul RT 04', volume: 4.1, poin: 205, status: 'Verified' },
-  { id: 5, tanggal: '10 Apr 2026', lokasi: 'Warung Bu Tejo', volume: 1.8, poin: 90, status: 'Verified' },
-  { id: 6, tanggal: '06 Apr 2026', lokasi: 'Bank Sampah Melati', volume: 6.0, poin: 300, status: 'Verified' },
-  { id: 7, tanggal: '01 Apr 2026', lokasi: 'Pos Kumpul RT 04', volume: 3.5, poin: 175, status: 'Pending' },
-  { id: 8, tanggal: '27 Mar 2026', lokasi: 'Bank Sampah Melati', volume: 2.0, poin: 100, status: 'Verified' },
-  { id: 9, tanggal: '22 Mar 2026', lokasi: 'Warung Bu Tejo', volume: 4.8, poin: 240, status: 'Verified' },
-  { id: 10, tanggal: '17 Mar 2026', lokasi: 'Pos Kumpul RT 04', volume: 1.5, poin: 75, status: 'Verified' },
-];
+import type { ActivityTransaction } from '../../hooks/useFirebaseLogic';
 
 const FILTERS = ['Semua', 'April 2026', 'Maret 2026'] as const;
 type Filter = (typeof FILTERS)[number];
 
-// Indonesian number formatters
 const intFormatter = new Intl.NumberFormat('id-ID');
 const oneDecimalFormatter = new Intl.NumberFormat('id-ID', {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
 });
 
-const totalLiters = mockRiwayat.reduce((sum, t) => sum + t.volume, 0);
-const totalPoin = mockRiwayat.reduce((sum, t) => sum + t.poin, 0);
-const totalRupiah = totalPoin * 100; // 1 poin = Rp 100
+interface RiwayatPageProps {
+  transactions: ActivityTransaction[];
+}
 
-export const RiwayatPage: React.FC = () => {
+export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions }) => {
   const [activeFilter, setActiveFilter] = useState<Filter>('Semua');
+
+  const filteredTransactions = useMemo(() => {
+    if (activeFilter === 'Semua') return transactions;
+
+    const targetMonth = activeFilter.split(' ')[0].toLowerCase();
+    return transactions.filter((tx) => {
+      if (!tx.createdAt) return false;
+      const date =
+        typeof tx.createdAt?.toDate === 'function'
+          ? tx.createdAt.toDate()
+          : new Date(tx.createdAt);
+      const monthName = date
+        .toLocaleDateString('id-ID', { month: 'long' })
+        .toLowerCase();
+      return monthName === targetMonth;
+    });
+  }, [transactions, activeFilter]);
+
+  const totalLiters = transactions.reduce((sum, t) => {
+    const match = t.subtitle.match(/([\d.]+)\s*L/);
+    return sum + (match ? parseFloat(match[1]) : 0);
+  }, 0);
+
+  const totalPoin = transactions.reduce(
+    (sum, t) => sum + Math.abs(t.pointsDelta),
+    0,
+  );
+  const totalRupiah = totalPoin * 100;
 
   return (
     <div>
@@ -50,7 +54,7 @@ export const RiwayatPage: React.FC = () => {
           Riwayat Setoran
         </h1>
         <p className="mt-2 text-sm text-forest-900/60">
-          Total {mockRiwayat.length} transaksi · {oneDecimalFormatter.format(totalLiters)} liter · {intFormatter.format(totalPoin)} poin
+          Total {transactions.length} transaksi · {oneDecimalFormatter.format(totalLiters)} liter · {intFormatter.format(totalPoin)} poin
         </p>
 
         {/* Summary cards */}
@@ -61,7 +65,7 @@ export const RiwayatPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Filter pills (UI only — no actual filtering) */}
+      {/* Filter pills */}
       <div className="mt-8 flex flex-wrap gap-2">
         {FILTERS.map((filter) => {
           const isActive = filter === activeFilter;
@@ -83,9 +87,27 @@ export const RiwayatPage: React.FC = () => {
 
       {/* Transaction list */}
       <ul className="mt-6 flex flex-col gap-3">
-        {mockRiwayat.map((tx) => (
-          <RiwayatRow key={tx.id} tx={tx} />
-        ))}
+        {filteredTransactions.length === 0 ? (
+          <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-10 flex flex-col items-center justify-center gap-3 text-center">
+            <div className="bg-amber-50 rounded-full p-4">
+              <Droplets size={28} className="text-amber-400" />
+            </div>
+            <p className="font-semibold text-forest-900 text-sm">
+              {transactions.length === 0
+                ? 'Belum ada setoran'
+                : `Tidak ada transaksi di ${activeFilter}`}
+            </p>
+            <p className="text-xs text-forest-900/60 max-w-[240px]">
+              {transactions.length === 0
+                ? 'Setor jelantahmu pertama kali dan mulai kumpulkan poin.'
+                : 'Coba pilih filter lain untuk melihat transaksi.'}
+            </p>
+          </li>
+        ) : (
+          filteredTransactions.map((tx) => (
+            <RiwayatRowFirestore key={tx.id} tx={tx} />
+          ))
+        )}
       </ul>
     </div>
   );
@@ -102,38 +124,43 @@ const SummaryCard: React.FC<{ label: string; value: string }> = ({ label, value 
   </div>
 );
 
-const RiwayatRow: React.FC<{ tx: RiwayatEntry }> = ({ tx }) => (
-  <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-4 flex items-center justify-between gap-3">
-    {/* Left: icon + lokasi/meta */}
-    <div className="flex items-center min-w-0">
-      <div className="bg-amber-50 rounded-lg p-2 shrink-0">
-        <Droplets size={20} className="text-amber-500" />
+const RiwayatRowFirestore: React.FC<{ tx: ActivityTransaction }> = ({ tx }) => {
+  const isPositive = tx.pointsDelta > 0;
+  return (
+    <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-4 flex items-center justify-between gap-3">
+      <div className="flex items-center min-w-0">
+        <div className="bg-amber-50 rounded-lg p-2 shrink-0">
+          <Droplets size={20} className="text-amber-500" />
+        </div>
+        <div className="flex flex-col ml-3 min-w-0">
+          <span className="font-semibold text-forest-900 text-sm truncate">
+            {tx.title}
+          </span>
+          <span className="text-xs text-forest-900/65 truncate">
+            {tx.subtitle}
+          </span>
+        </div>
       </div>
-      <div className="flex flex-col ml-3 min-w-0">
-        <span className="font-semibold text-forest-900 text-sm truncate">
-          {tx.lokasi}
+      <div className="flex flex-col items-end gap-1 shrink-0">
+        <span
+          className={`font-bold text-sm tabular-nums ${
+            isPositive ? 'text-forest-700' : 'text-red-500'
+          }`}
+        >
+          {isPositive ? '+' : ''}
+          {tx.pointsDelta} Pts
         </span>
-        <span className="text-xs text-forest-900/65 tabular-nums">
-          {tx.tanggal} · {oneDecimalFormatter.format(tx.volume)} L
-        </span>
+        <StatusBadge status={tx.status} />
       </div>
-    </div>
+    </li>
+  );
+};
 
-    {/* Right: poin + status */}
-    <div className="flex flex-col items-end gap-1 shrink-0">
-      <span className="font-bold text-forest-700 text-sm tabular-nums">
-        +{intFormatter.format(tx.poin)} Pts
-      </span>
-      <StatusBadge status={tx.status} />
-    </div>
-  </li>
-);
-
-const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const className =
-    status === 'Verified'
+    status === 'Verified' || status === 'Completed'
       ? 'bg-amber-50 text-amber-700'
-      : 'bg-cream-200 text-forest-900/50';
+      : 'bg-cream-200 text-forest-900/65';
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${className}`}>
       {status}
