@@ -20,14 +20,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
     }`;
 
   return (
-    <nav className="absolute bottom-0 w-full bg-white border-t border-[#E8DEC4] pb-safe pt-2 px-6 flex justify-between items-center z-50 md:hidden">
+    <nav className="fixed bottom-0 w-full bg-white border-t border-[#E8DEC4] pb-safe pt-2 px-6 flex justify-between items-center z-50 md:hidden">
       <button onClick={() => onTabChange('home')} className={tabClass('home')}>
         <Home size={22} className="mb-1" />
-        <span className="text-[9px] font-bold">Beranda</span>
+        <span className="text-[10px] font-bold">Beranda</span>
       </button>
       <button onClick={() => onTabChange('map')} className={tabClass('map')}>
         <MapPin size={22} className="mb-1" />
-        <span className="text-[9px] font-bold">Map Node</span>
+        <span className="text-[10px] font-bold">Map Node</span>
       </button>
 
       <div className="relative -top-6">
@@ -38,11 +38,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
 
       <button onClick={() => onTabChange('riwayat')} className={tabClass('riwayat')}>
         <History size={22} className="mb-1" />
-        <span className="text-[9px] font-bold">Riwayat</span>
+        <span className="text-[10px] font-bold">Riwayat</span>
       </button>
       <button onClick={() => onTabChange('profil')} className={tabClass('profil')}>
         <UserIcon size={22} className="mb-1" />
-        <span className="text-[9px] font-bold">Profil</span>
+        <span className="text-[10px] font-bold">Profil</span>
       </button>
     </nav>
   );

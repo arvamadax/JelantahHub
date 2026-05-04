@@ -20,7 +20,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
       : 'flex items-center gap-2 text-forest-900/50 hover:text-forest-700 transition-colors duration-150';
   
   return (
-    <header className="absolute top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4] z-40 flex items-center justify-between px-4">
+    <header className="fixed top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4] z-40 flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <img
           src="/logos/jelantahhub-256.png"
@@ -58,7 +58,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
             <img 
               src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop"} 
               alt="Profile" 
-              className="w-8 h-8 rounded-full border-2 border-forest-100 object-cover"
+              className="w-8 h-8 rounded-full border-2 border-forest-100 object-cover overflow-hidden"
             />
           </button>
 

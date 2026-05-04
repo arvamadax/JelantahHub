@@ -18,6 +18,108 @@ interface NodeProps {
   icon: 'Store' | 'Utensils';
 }
 
+const ProfilPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+  const { user, userData } = useAuth();
+  return (
+    <div className="space-y-4">
+      <h1 className="font-display font-extrabold text-forest-900 text-[clamp(1.75rem,2vw+1rem,2.25rem)] leading-tight tracking-tight">
+        Profil
+      </h1>
+
+      {/* Avatar + Info */}
+      <div className="bg-white border border-[#E8DEC4] rounded-2xl p-6 flex items-center gap-4">
+        <img
+          src={user?.photoURL || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop'}
+          alt="Foto Profil"
+          className="w-16 h-16 rounded-full object-cover border-2 border-amber-200"
+        />
+        <div className="min-w-0">
+          <p className="font-display font-bold text-forest-900 text-lg truncate">
+            {userData?.name || 'Pengguna'}
+          </p>
+          <p className="text-sm text-forest-900/60 truncate">{userData?.email || ''}</p>
+          <span className="inline-block mt-1 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+            Verified Eco-Member
+          </span>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white border border-[#E8DEC4] rounded-2xl p-4 text-center">
+          <p className="font-display font-extrabold text-2xl text-amber-500 tabular-nums">
+            {userData?.points?.toLocaleString('id-ID') || 0}
+          </p>
+          <p className="text-xs text-forest-900/60 mt-1">Total Poin</p>
+        </div>
+        <div className="bg-white border border-[#E8DEC4] rounded-2xl p-4 text-center">
+          <p className="font-display font-extrabold text-2xl text-forest-700 tabular-nums">
+            {user?.uid.substring(0, 4).toUpperCase() || '--'}
+          </p>
+          <p className="text-xs text-forest-900/60 mt-1">ID Member</p>
+        </div>
+      </div>
+
+      {/* Menu Items */}
+      <div className="bg-white border border-[#E8DEC4] rounded-2xl overflow-hidden divide-y divide-[#E8DEC4]">
+        {[
+          { label: 'Tampilkan QR Code', sub: `ID: JH-${user?.uid.substring(0, 4).toUpperCase()}` },
+          { label: 'Notifikasi', sub: 'Atur preferensi notifikasi' },
+          { label: 'Bantuan & FAQ', sub: 'Pertanyaan yang sering ditanyakan' },
+          { label: 'Tentang JelantahHub', sub: 'Versi 1.0.0' },
+        ].map((item) => (
+          <button
+            key={item.label}
+            className="w-full flex items-center justify-between px-5 py-4 hover:bg-cream-50 active:bg-cream-200 transition-colors text-left min-h-[56px]"
+          >
+            <div>
+              <p className="text-sm font-semibold text-forest-900">{item.label}</p>
+              <p className="text-xs text-forest-900/60">{item.sub}</p>
+            </div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-forest-900/45 shrink-0"
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        ))}
+      </div>
+
+      {/* Sign Out */}
+      <button
+        onClick={onLogout}
+        className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-[#E8DEC4] rounded-2xl text-red-500 font-semibold text-sm hover:bg-red-50 active:bg-red-100 transition-colors min-h-[56px]"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Keluar dari Akun
+      </button>
+    </div>
+  );
+};
+
 export const Dashboard: React.FC = () => {
   const { user, userData, logOut } = useAuth();
   const { transactions, handleSetor, handleTukar } = useFirebaseLogic(user, userData);
@@ -35,12 +137,14 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
       <TopBar onLogout={logOut} activeTab={tab} onTabChange={setTab} />
 
-      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-24 md:pb-12 custom-scrollbar">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-28 md:pb-12 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
           {tab === 'riwayat' ? (
             <RiwayatPage transactions={transactions} />
           ) : tab === 'map' ? (
             <TitikKumpulPage />
+          ) : tab === 'profil' ? (
+            <ProfilPage onLogout={logOut} />
           ) : (
           <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-12 md:gap-6">
             {/* Left Column */}
