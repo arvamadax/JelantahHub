@@ -11,6 +11,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { HeroCalculator } from './landing/HeroCalculator';
+import { AnimatePresence } from 'motion/react';
 
 type ProofStat = {
   label: string;
@@ -236,28 +237,67 @@ const PetaTitikSetor: React.FC = () => {
             </a>
           </div>
 
-          {/* RIGHT: map placeholder */}
-          <div className="bg-forest-50 border border-[#E8DEC4] rounded-2xl h-full min-h-[320px] flex flex-col items-center justify-center text-center px-8 py-10">
-            <MapPin size={36} className="text-forest-300 mb-4" aria-hidden="true" />
-            <p className="font-display font-bold text-forest-700 text-lg mb-2">
-              Peta Interaktif
-            </p>
-            <p className="text-sm text-forest-700/60 max-w-[200px] leading-relaxed">
-              Akan menampilkan titik setor aktif di sekitarmu secara real-time.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2 justify-center">
-              {['Bank Sampah', 'Warung Mitra', 'Pos RT'].map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-forest-100 text-forest-700 text-xs font-semibold px-3 py-1 rounded-full"
-                >
-                  {tag}
+          {/* RIGHT: stylized map preview */}
+          <div className="relative bg-forest-50 border border-[#E8DEC4] rounded-2xl h-full min-h-[320px] overflow-hidden">
+            <svg
+              viewBox="0 0 400 320"
+              preserveAspectRatio="xMidYMid slice"
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full"
+            >
+              <defs>
+                <pattern id="petaGrid" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M32 0H0V32" fill="none" stroke="#A6CBB6" strokeOpacity="0.35" strokeWidth="0.6" />
+                </pattern>
+                <linearGradient id="petaSheen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FBF6E9" stopOpacity="0" />
+                  <stop offset="100%" stopColor="#FBF6E9" stopOpacity="0.55" />
+                </linearGradient>
+              </defs>
+              <rect width="400" height="320" fill="#ECF5F0" />
+              <rect width="400" height="320" fill="url(#petaGrid)" />
+              {/* Abstract roads */}
+              <path d="M-20 90 Q120 70 200 120 T420 100" stroke="#A6CBB6" strokeWidth="6" fill="none" strokeLinecap="round" />
+              <path d="M40 -10 Q100 120 60 220 T100 340" stroke="#A6CBB6" strokeWidth="5" fill="none" strokeLinecap="round" />
+              <path d="M260 -10 Q220 140 320 200 T380 340" stroke="#A6CBB6" strokeWidth="5" fill="none" strokeLinecap="round" />
+              <path d="M-20 240 Q140 220 220 260 T420 230" stroke="#A6CBB6" strokeWidth="4" fill="none" strokeLinecap="round" />
+              {/* River */}
+              <path d="M-20 180 Q100 200 200 170 T420 200" stroke="#7AB394" strokeOpacity="0.45" strokeWidth="10" fill="none" strokeLinecap="round" />
+              <rect width="400" height="320" fill="url(#petaSheen)" />
+            </svg>
+            {/* Pins */}
+            {[
+              { top: '24%', left: '28%', label: 'Bank Sampah Melati', dist: '1.2 km', delay: '0s' },
+              { top: '48%', left: '60%', label: 'Pos Kumpul RT 04', dist: '0.8 km', delay: '0.6s' },
+              { top: '70%', left: '40%', label: 'Warung Bu Tejo', dist: '3.5 km', delay: '1.2s' },
+            ].map((pin) => (
+              <div
+                key={pin.label}
+                className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2"
+                style={{ top: pin.top, left: pin.left }}
+              >
+                <span className="relative flex">
+                  <span
+                    className="absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-60 animate-ping"
+                    style={{ animationDelay: pin.delay }}
+                  />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 ring-2 ring-cream-50" />
                 </span>
-              ))}
+                <span className="bg-cream-50 text-forest-900 text-[11px] font-semibold px-2 py-0.5 rounded-md shadow-[var(--shadow-md)] whitespace-nowrap">
+                  {pin.label} · {pin.dist}
+                </span>
+              </div>
+            ))}
+            {/* Footer caption */}
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
+              <span className="bg-cream-50/90 backdrop-blur-sm text-forest-900 font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
+                <MapPin size={12} className="text-amber-600" />
+                Bandung · 12 titik aktif
+              </span>
+              <span className="bg-cream-50/90 backdrop-blur-sm text-forest-700 font-medium px-2.5 py-1 rounded-full">
+                Live
+              </span>
             </div>
-            <p className="mt-4 text-xs text-forest-700/60">
-              Peluncuran peta interaktif: Mei 2026
-            </p>
           </div>
         </div>
       </div>
@@ -269,9 +309,146 @@ interface LandingPageProps {
   onNavigateAuth: () => void;
 }
 
+type LegalModal = null | 'privasi' | 'syarat' | 'tentang';
+
+const LEGAL_CONTENT: Record<Exclude<LegalModal, null>, { title: string; body: React.ReactNode }> = {
+  tentang: {
+    title: 'Tentang JelantahHub',
+    body: (
+      <>
+        <p>
+          JelantahHub adalah platform eco-fintech sirkular yang menghubungkan rumah tangga,
+          warung, dan UMKM dengan jaringan titik kumpul jelantah serta kilang biofuel mitra.
+          Setiap liter minyak goreng bekas yang disetor diubah jadi poin yang dapat dicairkan
+          ke saldo digital.
+        </p>
+        <p>
+          Misi kami: mengurangi pencemaran air akibat jelantah yang dibuang sembarangan,
+          sekaligus memberi nilai ekonomi bagi keluarga Indonesia.
+        </p>
+        <p className="text-xs text-forest-900/60">
+          MVP dibangun untuk IYREF 2026 Hackathon. Versi 1.0.0.
+        </p>
+      </>
+    ),
+  },
+  privasi: {
+    title: 'Kebijakan Privasi',
+    body: (
+      <>
+        <p>
+          JelantahHub menghormati privasi data Anda. Kami hanya menyimpan informasi minimum
+          yang diperlukan untuk menjalankan layanan: nama, email, dan riwayat setoran.
+        </p>
+        <p>
+          <strong className="text-forest-900">Data tidak dijual</strong> dan tidak dibagikan
+          ke pihak ketiga di luar mitra operasional (kilang biofuel, payment gateway untuk
+          pencairan poin).
+        </p>
+        <p>
+          Anda dapat meminta penghapusan akun kapan saja dengan menghubungi
+          <a href="mailto:halo@jelantahhub.id" className="text-amber-700 font-semibold"> halo@jelantahhub.id</a>.
+        </p>
+        <p className="text-xs text-forest-900/60">Diperbarui terakhir: April 2026.</p>
+      </>
+    ),
+  },
+  syarat: {
+    title: 'Syarat Layanan',
+    body: (
+      <>
+        <p>
+          Dengan mendaftar di JelantahHub, Anda setuju untuk hanya menyetor jelantah yang
+          berasal dari konsumsi rumah tangga atau usaha legal Anda sendiri. Penyetoran
+          minyak hasil curian, daur ulang ilegal, atau substansi non-jelantah dilarang.
+        </p>
+        <p>
+          Poin yang diberikan setelah verifikasi titik kumpul bersifat final. Pencairan ke
+          saldo digital dilakukan dalam batas wajar untuk mencegah penyalahgunaan.
+        </p>
+        <p>
+          JelantahHub dapat menangguhkan akun yang melanggar ketentuan tanpa pemberitahuan
+          terlebih dahulu.
+        </p>
+        <p className="text-xs text-forest-900/60">Diperbarui terakhir: April 2026.</p>
+      </>
+    ),
+  },
+};
+
+const LegalModalView: React.FC<{ active: LegalModal; onClose: () => void }> = ({ active, onClose }) => {
+  React.useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [active, onClose]);
+
+  if (!active) return null;
+  const content = LEGAL_CONTENT[active];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] bg-forest-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center px-0 sm:px-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 16, opacity: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="legal-modal-title"
+        className="bg-cream-100 w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] max-h-[85vh] flex flex-col"
+      >
+        <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-3 border-b border-[#E8DEC4]">
+          <h3 id="legal-modal-title" className="font-display font-extrabold text-xl text-forest-900">
+            {content.title}
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Tutup"
+            className="shrink-0 w-9 h-9 rounded-full hover:bg-cream-200 flex items-center justify-center text-forest-900/70 hover:text-forest-900 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="px-6 py-5 overflow-y-auto flex flex-col gap-3 text-sm text-forest-900/85 leading-relaxed">
+          {content.body}
+        </div>
+        <div className="px-6 py-4 border-t border-[#E8DEC4]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full inline-flex items-center justify-center h-11 px-5 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 font-bold text-sm transition-colors duration-150"
+          >
+            Mengerti
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
   const dampakRef = React.useRef<HTMLDivElement | null>(null);
   const [dampakTriggered, setDampakTriggered] = React.useState(false);
+  const [legalModal, setLegalModal] = React.useState<LegalModal>(null);
+  const [newsletterStatus, setNewsletterStatus] = React.useState<'idle' | 'submitted'>('idle');
 
   React.useEffect(() => {
     const node = dampakRef.current;
@@ -455,7 +632,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               transition={{ duration: 0.5, delay: 0.26 }}
               className="md:col-span-5"
             >
-              <HeroCalculator />
+              <HeroCalculator onCTA={onNavigateAuth} />
             </motion.div>
           </div>
         </div>
@@ -833,12 +1010,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               >
                 Mitra
               </a>
-              <a
-                href="#"
-                className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150"
-              >
-                Blog
-              </a>
             </nav>
 
             {/* Col 3 — Perusahaan */}
@@ -846,14 +1017,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               <p className="text-xs font-bold tracking-[0.12em] uppercase text-forest-900/50 mb-1">
                 PERUSAHAAN
               </p>
-              <a href="#" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
+              <button
+                type="button"
+                onClick={() => setLegalModal('tentang')}
+                className="w-fit text-left text-forest-900/70 hover:text-forest-900 transition-colors duration-150"
+              >
                 Tentang
-              </a>
+              </button>
               <a href="#mitra" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
                 Mitra
-              </a>
-              <a href="#" className="w-fit text-forest-900/70 hover:text-forest-900 transition-colors duration-150">
-                Karir
               </a>
               <a
                 href="mailto:halo@jelantahhub.id"
@@ -871,23 +1043,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               <p className="text-forest-900/60 text-[13px]">
                 Cerita dampak & insight sirkular ekonomi, langsung ke inboxmu.
               </p>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="mt-2 flex gap-2"
-              >
-                <input
-                  type="email"
-                  placeholder="email@kamu.com"
-                  aria-label="Email untuk update bulanan"
-                  className="flex-1 min-w-0 bg-white border border-[#E8DEC4] rounded-lg px-3 py-2 text-sm text-forest-900 placeholder:text-forest-900/30 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
-                />
-                <button
-                  type="submit"
-                  className="bg-amber-500 hover:bg-amber-600 text-cream-50 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-150"
+              {newsletterStatus === 'idle' ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setNewsletterStatus('submitted');
+                  }}
+                  className="mt-2 flex gap-2"
                 >
-                  Ikut
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    required
+                    placeholder="email@kamu.com"
+                    aria-label="Email untuk update bulanan"
+                    className="flex-1 min-w-0 bg-white border border-[#E8DEC4] rounded-lg px-3 py-2 text-sm text-forest-900 placeholder:text-forest-900/30 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-amber-500 hover:bg-amber-600 text-cream-50 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-150"
+                  >
+                    Ikut
+                  </button>
+                </form>
+              ) : (
+                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 text-sm text-amber-800 font-semibold">
+                  ✓ Terima kasih! Update bulanan akan dikirim ke inbox kamu.
+                </div>
+              )}
             </div>
           </div>
 
@@ -895,21 +1077,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
           <div className="mt-8 pt-6 border-t border-[#E8DEC4] flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center text-[13px] text-forest-900/50">
             <p>© 2026 PT JelantahHub Indonesia. Sirkular untuk semua.</p>
             <div className="flex items-center gap-3">
-              <a href="#" className="hover:text-forest-900 transition-colors duration-150">
+              <button
+                type="button"
+                onClick={() => setLegalModal('privasi')}
+                className="hover:text-forest-900 transition-colors duration-150"
+              >
                 Privasi
-              </a>
+              </button>
               <span aria-hidden="true">·</span>
-              <a href="#" className="hover:text-forest-900 transition-colors duration-150">
+              <button
+                type="button"
+                onClick={() => setLegalModal('syarat')}
+                className="hover:text-forest-900 transition-colors duration-150"
+              >
                 Syarat
-              </a>
+              </button>
               <span aria-hidden="true">·</span>
-              <a href="#" className="hover:text-forest-900 transition-colors duration-150">
+              <a href="mailto:halo@jelantahhub.id" className="hover:text-forest-900 transition-colors duration-150">
                 Kontak
               </a>
             </div>
           </div>
         </div>
       </footer>
+
+      <AnimatePresence>
+        {legalModal && (
+          <LegalModalView active={legalModal} onClose={() => setLegalModal(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

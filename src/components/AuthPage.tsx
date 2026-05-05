@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
+import { motion } from 'motion/react';
+import { ArrowLeft, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface AuthPageProps {
@@ -9,7 +9,30 @@ interface AuthPageProps {
 
 export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
   const { signIn } = useAuth();
-  const [showPhone, setShowPhone] = React.useState(false);
+  const [authStatus, setAuthStatus] = React.useState<'idle' | 'loading' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  const handleGoogleSignIn = async () => {
+    setAuthStatus('loading');
+    setErrorMessage(null);
+    try {
+      await signIn();
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      let msg = 'Login gagal. Coba lagi atau hubungi tim support.';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        setAuthStatus('idle');
+        return;
+      }
+      if (code === 'auth/popup-blocked') {
+        msg = 'Browser memblokir popup login. Izinkan popup untuk situs ini lalu coba lagi.';
+      } else if (code === 'auth/network-request-failed') {
+        msg = 'Koneksi bermasalah. Periksa internet kamu lalu coba lagi.';
+      }
+      setAuthStatus('error');
+      setErrorMessage(msg);
+    }
+  };
 
   return (
     <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
@@ -62,91 +85,84 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
 
           <div className="mt-8 space-y-3">
             <button
-              onClick={signIn}
-              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-forest-700 hover:bg-forest-800 active:bg-forest-900 text-cream-50 font-bold rounded-xl shadow-[var(--shadow-forest)] transition-colors duration-150 min-h-[56px]"
+              onClick={handleGoogleSignIn}
+              disabled={authStatus === 'loading'}
+              aria-busy={authStatus === 'loading'}
+              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-forest-700 hover:bg-forest-800 active:bg-forest-900 disabled:opacity-70 disabled:cursor-not-allowed text-cream-50 font-bold rounded-xl shadow-[var(--shadow-forest)] transition-colors duration-150 min-h-[56px]"
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-                <path
-                  fill="#FFC107"
-                  d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"
-                />
-                <path
-                  fill="#FF3D00"
-                  d="M9 18c2.43 0 4.46-.81 5.95-2.18l-2.92-2.26c-.81.54-1.84.86-3.03.86-2.34 0-4.32-1.58-5.03-3.7H.94v2.32A9 9 0 0 0 9 18z"
-                />
-                <path
-                  fill="#4CAF50"
-                  d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.3-1.72V4.96H.94A9 9 0 0 0 0 9c0 1.45.35 2.83.94 4.04l3.03-2.32z"
-                />
-                <path
-                  fill="#1976D2"
-                  d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .94 4.96l3.03 2.32C4.68 5.16 6.66 3.58 9 3.58z"
-                />
-              </svg>
-              Lanjutkan dengan Google
+              {authStatus === 'loading' ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+                  Menghubungkan…
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                    <path
+                      fill="#FFC107"
+                      d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"
+                    />
+                    <path
+                      fill="#FF3D00"
+                      d="M9 18c2.43 0 4.46-.81 5.95-2.18l-2.92-2.26c-.81.54-1.84.86-3.03.86-2.34 0-4.32-1.58-5.03-3.7H.94v2.32A9 9 0 0 0 9 18z"
+                    />
+                    <path
+                      fill="#4CAF50"
+                      d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.3-1.72V4.96H.94A9 9 0 0 0 0 9c0 1.45.35 2.83.94 4.04l3.03-2.32z"
+                    />
+                    <path
+                      fill="#1976D2"
+                      d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .94 4.96l3.03 2.32C4.68 5.16 6.66 3.58 9 3.58z"
+                    />
+                  </svg>
+                  Lanjutkan dengan Google
+                </>
+              )}
             </button>
+
+            {authStatus === 'error' && errorMessage && (
+              <div
+                role="alert"
+                className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-2"
+              >
+                <AlertCircle size={16} className="text-red-600 mt-0.5 shrink-0" aria-hidden="true" />
+                <div className="text-xs text-red-700 leading-relaxed">{errorMessage}</div>
+              </div>
+            )}
 
             <div className="relative flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-[#E8DEC4]" />
-              <span className="text-xs text-forest-900/60">atau</span>
+              <span className="text-xs text-forest-900/60">opsi lain</span>
               <div className="flex-1 h-px bg-[#E8DEC4]" />
             </div>
 
             <button
-              onClick={() => setShowPhone(!showPhone)}
-              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-cream-50 hover:bg-cream-100 border border-[#E8DEC4] text-forest-900 font-semibold rounded-xl transition-colors duration-150 min-h-[56px]"
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-cream-50 border border-dashed border-[#E8DEC4] text-forest-900/60 font-semibold rounded-xl cursor-not-allowed min-h-[56px]"
             >
-              <Phone size={18} className="text-forest-700" />
-              Lanjutkan dengan Nomor HP
+              Login Nomor HP
+              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Segera Hadir
+              </span>
             </button>
-
-            <AnimatePresence initial={false}>
-              {showPhone && (
-                <motion.div
-                  key="phone-input"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="overflow-hidden"
-                >
-                  <div className="pt-3 space-y-2">
-                    <input
-                      type="tel"
-                      placeholder="+62 812 3456 7890"
-                      className="w-full border border-[#E8DEC4] rounded-xl px-4 py-3 text-sm text-forest-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 placeholder:text-forest-900/30"
-                    />
-                    {/* TODO: integrate Twilio/WA Business API */}
-                    <p className="text-xs text-forest-900/50 text-center">
-                      OTP akan dikirim via WhatsApp
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
           <div className="mt-6 flex items-center gap-2 justify-center text-xs text-forest-900/60">
-            <ShieldCheck size={14} className="text-forest-700" />
+            <ShieldCheck size={14} className="text-forest-700" aria-hidden="true" />
             Data kamu dienkripsi & tidak akan dibagikan.
           </div>
 
           <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-center">
-            <p className="text-[12px] text-amber-800">
+            <p className="text-xs text-amber-800">
               💰 Rata-rata pengguna aktif mendapat{' '}
               <strong>Rp 87.000/bulan</strong>
             </p>
           </div>
 
-          <p className="mt-8 text-xs text-center text-forest-900/50 leading-relaxed">
-            Dengan melanjutkan, kamu menyetujui{' '}
-            <a href="#" className="text-amber-700 hover:text-amber-800 hover:underline">
-              Syarat Layanan
-            </a>{' '}
-            dan{' '}
-            <a href="#" className="text-amber-700 hover:text-amber-800 hover:underline">
-              Kebijakan Privasi
-            </a>{' '}
+          <p className="mt-8 text-xs text-center text-forest-900/65 leading-relaxed">
+            Dengan melanjutkan, kamu menyetujui Syarat Layanan dan Kebijakan Privasi
             JelantahHub.
           </p>
         </motion.div>

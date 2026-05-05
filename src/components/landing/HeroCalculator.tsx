@@ -12,7 +12,11 @@ const co2Formatter = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 1,
 });
 
-export const HeroCalculator: React.FC = () => {
+interface HeroCalculatorProps {
+  onCTA?: () => void;
+}
+
+export const HeroCalculator: React.FC<HeroCalculatorProps> = ({ onCTA }) => {
   const [liters, setLiters] = useState(DEFAULT_L);
 
   const rpPerMonth = liters * RP_PER_LITER;
@@ -151,13 +155,14 @@ export const HeroCalculator: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. Footer link */}
-      <a
-        href="#"
+      {/* 5. Footer CTA */}
+      <button
+        type="button"
+        onClick={onCTA}
         className="mt-6 inline-flex items-center text-amber-700 font-semibold text-sm hover:text-amber-800 transition-colors duration-150"
       >
         → Setor pertamamu, dapat +1.000 poin bonus
-      </a>
+      </button>
     </div>
   );
 };

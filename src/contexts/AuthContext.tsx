@@ -82,14 +82,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async () => {
     if (!auth || !googleProvider) {
-      alert("Sign in is unavailable. Firebase is not configured properly.");
-      return;
+      throw new Error('auth-not-configured');
     }
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      // Silently handle error in production
-    }
+    await signInWithPopup(auth, googleProvider);
   };
 
   const logOut = async () => {
