@@ -6,12 +6,13 @@ export type DashboardTab = 'home' | 'map' | 'riwayat' | 'profil';
 interface BottomNavProps {
   activeTab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
+  onQuickSetor?: () => void;
 }
 
 const tabBaseClass =
   'flex flex-col items-center p-2 rounded-lg transition-colors min-w-[64px] min-h-[44px]';
 
-export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange, onQuickSetor }) => {
   const tabClass = (tab: DashboardTab) =>
     `${tabBaseClass} ${
       activeTab === tab
@@ -31,7 +32,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
       </button>
 
       <div className="relative -top-6">
-        <button className="w-14 h-14 bg-forest-700 rounded-full shadow-[var(--shadow-forest)] flex items-center justify-center text-cream-50 hover:bg-forest-800 active:bg-forest-900 transition-colors outline-none focus-visible:ring-4 focus-visible:ring-amber-500/40">
+        <button
+          type="button"
+          onClick={onQuickSetor}
+          aria-label="Setor cepat"
+          className="w-14 h-14 bg-forest-700 rounded-full shadow-[var(--shadow-forest)] flex items-center justify-center text-cream-50 hover:bg-forest-800 active:bg-forest-900 transition-colors outline-none focus-visible:ring-4 focus-visible:ring-amber-500/40"
+        >
           <PlusCircle size={28} />
         </button>
       </div>

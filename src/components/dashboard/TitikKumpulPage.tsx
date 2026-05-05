@@ -6,40 +6,13 @@ import {
   ShoppingBag,
   Home,
 } from 'lucide-react';
-
-type Tipe = 'bank_sampah' | 'warung' | 'pos_rt';
-type Status = 'open' | 'closed';
-
-interface Titik {
-  id: number;
-  nama: string;
-  alamat: string;
-  jarak: string;
-  jam: string;
-  hari: string;
-  status: Status;
-  tipe: Tipe;
-}
-
-const mockTitikKumpul: Titik[] = [
-  { id: 1,  nama: 'Bank Sampah Melati',         alamat: 'Jl. Cijaura Hilir No. 12, Bandung',          jarak: '1.2 km',  jam: '08.00 – 17.00', hari: 'Sen–Sab',  status: 'open',   tipe: 'bank_sampah' },
-  { id: 2,  nama: 'Warung Bu Tejo',             alamat: 'Jl. Terusan Buah Batu No. 45, Bandung',      jarak: '3.5 km',  jam: '07.00 – 15.00', hari: 'Sen–Jum',  status: 'closed', tipe: 'warung' },
-  { id: 3,  nama: 'Pos Kumpul RT 04 RW 02',     alamat: 'Perum Griya Asri Blok C, Bandung',           jarak: '0.8 km',  jam: '09.00 – 16.00', hari: 'Sen–Ming', status: 'open',   tipe: 'pos_rt' },
-  { id: 4,  nama: 'Bank Sampah Berseri',        alamat: 'Jl. Margahayu Raya No. 88, Bandung',         jarak: '4.1 km',  jam: '08.00 – 15.00', hari: 'Sen–Sab',  status: 'open',   tipe: 'bank_sampah' },
-  { id: 5,  nama: 'Toko Hijau Nusantara',       alamat: 'Jl. Soekarno Hatta No. 221, Bandung',        jarak: '5.3 km',  jam: '09.00 – 18.00', hari: 'Sen–Ming', status: 'open',   tipe: 'warung' },
-  { id: 6,  nama: 'Pos Kumpul RT 07 RW 05',     alamat: 'Jl. Derwati No. 3, Bandung',                 jarak: '2.9 km',  jam: '08.00 – 14.00', hari: 'Sen–Sab',  status: 'closed', tipe: 'pos_rt' },
-  { id: 7,  nama: 'Bank Sampah Harapan',        alamat: 'Jl. Kopo Permai No. 17, Bandung',            jarak: '6.2 km',  jam: '08.00 – 16.00', hari: 'Sen–Jum',  status: 'open',   tipe: 'bank_sampah' },
-  { id: 8,  nama: 'Warung Pak Harto',           alamat: 'Jl. Moch. Toha No. 56, Bandung',             jarak: '7.0 km',  jam: '06.00 – 14.00', hari: 'Sen–Sab',  status: 'open',   tipe: 'warung' },
-  { id: 9,  nama: 'Pos Kumpul RT 11 RW 08',     alamat: 'Jl. Panyileukan No. 9, Bandung',             jarak: '8.4 km',  jam: '09.00 – 15.00', hari: 'Sen–Ming', status: 'closed', tipe: 'pos_rt' },
-  { id: 10, nama: 'Bank Sampah Lestari',        alamat: 'Jl. Gedebage Selatan No. 33, Bandung',       jarak: '9.1 km',  jam: '08.00 – 17.00', hari: 'Sen–Sab',  status: 'open',   tipe: 'bank_sampah' },
-  { id: 11, nama: 'Minimarket Segar',           alamat: 'Jl. AH Nasution No. 100, Bandung',           jarak: '10.2 km', jam: '07.00 – 22.00', hari: 'Sen–Ming', status: 'open',   tipe: 'warung' },
-  { id: 12, nama: 'Pos Kumpul RT 02 RW 11',     alamat: 'Jl. Ujung Berung Indah No. 4, Bandung',      jarak: '11.8 km', jam: '08.00 – 14.00', hari: 'Sab–Ming', status: 'open',   tipe: 'pos_rt' },
-];
+import { useAuth } from '../../contexts/AuthContext';
+import { useNodes, type NodeStatus, type NodeTipe } from '../../hooks/useNodes';
 
 const FILTERS = ['Semua', 'Bank Sampah', 'Warung', 'Pos RT'] as const;
 type FilterPill = (typeof FILTERS)[number];
 
-const FILTER_TO_TIPE: Record<FilterPill, Tipe | null> = {
+const FILTER_TO_TIPE: Record<FilterPill, NodeTipe | null> = {
   'Semua': null,
   'Bank Sampah': 'bank_sampah',
   'Warung': 'warung',
@@ -52,14 +25,21 @@ const TIPE_ICON = {
   pos_rt: Home,
 } as const;
 
-export const TitikKumpulPage: React.FC = () => {
+interface TitikKumpulPageProps {
+  onSetor?: (nodeName: string) => void;
+}
+
+export const TitikKumpulPage: React.FC<TitikKumpulPageProps> = ({ onSetor }) => {
+  const { user } = useAuth();
+  const { nodes } = useNodes(user);
+
   const [search, setSearch] = useState('');
   const [pill, setPill] = useState<FilterPill>('Semua');
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const tipeFilter = FILTER_TO_TIPE[pill];
-    return mockTitikKumpul.filter((t) => {
+    return nodes.filter((t) => {
       if (tipeFilter && t.tipe !== tipeFilter) return false;
       if (q) {
         const inNama = t.nama.toLowerCase().includes(q);
@@ -68,7 +48,7 @@ export const TitikKumpulPage: React.FC = () => {
       }
       return true;
     });
-  }, [search, pill]);
+  }, [nodes, search, pill]);
 
   return (
     <div>
@@ -78,7 +58,7 @@ export const TitikKumpulPage: React.FC = () => {
           Titik Kumpul
         </h1>
         <p className="mt-2 text-sm text-forest-900/60">
-          {mockTitikKumpul.length} titik aktif di sekitarmu
+          {nodes.length} titik aktif di sekitarmu
         </p>
 
         {/* Search */}
@@ -123,7 +103,7 @@ export const TitikKumpulPage: React.FC = () => {
       {filtered.length > 0 ? (
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((t) => (
-            <TitikCard key={t.id} titik={t} />
+            <TitikCard key={t.id} titik={t} onSetor={onSetor} />
           ))}
         </div>
       ) : (
@@ -133,14 +113,15 @@ export const TitikKumpulPage: React.FC = () => {
   );
 };
 
-// ──────────────────────────────────────────────────────────────────
-
-const TitikCard: React.FC<{ titik: Titik }> = ({ titik }) => {
+const TitikCard: React.FC<{
+  titik: { id: string; nama: string; alamat: string; jarak: string; jam: string; hari: string; status: NodeStatus; tipe: NodeTipe };
+  onSetor?: (nodeName: string) => void;
+}> = ({ titik, onSetor }) => {
   const Icon = TIPE_ICON[titik.tipe];
+  const isOpen = titik.status === 'open';
 
   return (
     <article className="bg-white border border-[#E8DEC4] rounded-xl p-5 hover:shadow-[var(--shadow-md)] transition-shadow duration-200 flex flex-col">
-      {/* ROW 1: identity + status */}
       <div className="flex justify-between items-start gap-3">
         <div className="flex items-start min-w-0 flex-1">
           <div className="bg-amber-50 text-amber-600 rounded-lg p-2 w-9 h-9 flex items-center justify-center shrink-0">
@@ -158,32 +139,32 @@ const TitikCard: React.FC<{ titik: Titik }> = ({ titik }) => {
         <StatusBadge status={titik.status} />
       </div>
 
-      {/* DIVIDER */}
       <div className="border-t border-[#E8DEC4] my-4" />
 
-      {/* ROW 2: meta grid */}
       <div className="grid grid-cols-3 gap-2 text-center">
         <Stat label="Jarak" value={titik.jarak} />
         <Stat label="Jam Buka" value={titik.jam} />
         <Stat label="Hari" value={titik.hari} />
       </div>
 
-      {/* CTA */}
       <button
-        className="mt-4 w-full inline-flex items-center justify-center gap-1 bg-forest-700 hover:bg-forest-800 active:bg-forest-900 text-cream-50 rounded-xl py-2.5 text-sm font-bold transition-colors duration-120"
         type="button"
+        onClick={() => isOpen && onSetor?.(titik.nama)}
+        disabled={!isOpen}
+        aria-disabled={!isOpen}
+        className="mt-4 w-full inline-flex items-center justify-center gap-1 bg-forest-700 hover:bg-forest-800 active:bg-forest-900 disabled:bg-cream-200 disabled:text-forest-900/45 disabled:cursor-not-allowed text-cream-50 rounded-xl py-2.5 text-sm font-bold transition-colors duration-150"
       >
-        Setor di Sini →
+        {isOpen ? 'Setor di Sini →' : 'Sedang Tutup'}
       </button>
     </article>
   );
 };
 
-const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: NodeStatus }> = ({ status }) => {
   const className =
     status === 'open'
       ? 'bg-amber-50 text-amber-700'
-      : 'bg-cream-200 text-forest-900/40';
+      : 'bg-cream-200 text-forest-900/60';
   const label = status === 'open' ? '● BUKA' : '● TUTUP';
   return (
     <span
@@ -203,10 +184,10 @@ const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
 
 const EmptyState: React.FC = () => (
   <div className="mt-12 flex flex-col items-center text-center">
-    <MapPin size={40} className="text-forest-900/20" aria-hidden="true" />
-    <p className="text-forest-900/40 font-semibold mt-3">
+    <MapPin size={40} className="text-forest-900/30" aria-hidden="true" />
+    <p className="text-forest-900/60 font-semibold mt-3">
       Titik kumpul tidak ditemukan
     </p>
-    <p className="text-forest-900/30 text-sm mt-1">Coba kata kunci lain</p>
+    <p className="text-forest-900/45 text-sm mt-1">Coba kata kunci lain</p>
   </div>
 );

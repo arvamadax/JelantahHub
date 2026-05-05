@@ -2,53 +2,73 @@ import React, { useMemo, useState } from 'react';
 import { Droplets } from 'lucide-react';
 import type { ActivityTransaction } from '../../hooks/useFirebaseLogic';
 
-const FILTERS = ['Semua', 'April 2026', 'Maret 2026'] as const;
-type Filter = (typeof FILTERS)[number];
-
 const intFormatter = new Intl.NumberFormat('id-ID');
 const oneDecimalFormatter = new Intl.NumberFormat('id-ID', {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
 });
 
+const monthFormatter = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' });
+
+const txDate = (tx: ActivityTransaction): Date | null => {
+  if (!tx.createdAt) return null;
+  if (typeof tx.createdAt?.toDate === 'function') return tx.createdAt.toDate();
+  const d = new Date(tx.createdAt);
+  return Number.isNaN(d.getTime()) ? null : d;
+};
+
 interface RiwayatPageProps {
   transactions: ActivityTransaction[];
+  loading?: boolean;
 }
 
-export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions }) => {
-  const [activeFilter, setActiveFilter] = useState<Filter>('Semua');
+export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions, loading = false }) => {
+  const availableFilters = useMemo(() => {
+    const months: { label: string; key: string }[] = [];
+    const seen = new Set<string>();
+    for (const tx of transactions) {
+      const d = txDate(tx);
+      if (!d) continue;
+      const label = monthFormatter.format(d);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      months.push({ label, key });
+    }
+    return ['Semua', ...months.map((m) => m.label)];
+  }, [transactions]);
+
+  const [activeFilter, setActiveFilter] = useState<string>('Semua');
+
+  React.useEffect(() => {
+    if (!availableFilters.includes(activeFilter)) {
+      setActiveFilter('Semua');
+    }
+  }, [availableFilters, activeFilter]);
 
   const filteredTransactions = useMemo(() => {
     if (activeFilter === 'Semua') return transactions;
-
-    const targetMonth = activeFilter.split(' ')[0].toLowerCase();
     return transactions.filter((tx) => {
-      if (!tx.createdAt) return false;
-      const date =
-        typeof tx.createdAt?.toDate === 'function'
-          ? tx.createdAt.toDate()
-          : new Date(tx.createdAt);
-      const monthName = date
-        .toLocaleDateString('id-ID', { month: 'long' })
-        .toLowerCase();
-      return monthName === targetMonth;
+      const d = txDate(tx);
+      if (!d) return false;
+      return monthFormatter.format(d) === activeFilter;
     });
   }, [transactions, activeFilter]);
 
   const totalLiters = transactions.reduce((sum, t) => {
+    if (typeof t.volumeLiters === 'number') return sum + t.volumeLiters;
     const match = t.subtitle.match(/([\d.]+)\s*L/);
     return sum + (match ? parseFloat(match[1]) : 0);
   }, 0);
 
   const totalPoin = transactions.reduce(
-    (sum, t) => sum + Math.abs(t.pointsDelta),
+    (sum, t) => (t.pointsDelta > 0 ? sum + t.pointsDelta : sum),
     0,
   );
   const totalRupiah = totalPoin * 100;
 
   return (
     <div>
-      {/* Header */}
       <header>
         <h1 className="font-display font-extrabold text-forest-900 text-[clamp(1.75rem,2vw+1rem,2.25rem)] leading-tight tracking-tight">
           Riwayat Setoran
@@ -57,21 +77,20 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions }) => {
           Total {transactions.length} transaksi · {oneDecimalFormatter.format(totalLiters)} liter · {intFormatter.format(totalPoin)} poin
         </p>
 
-        {/* Summary cards */}
         <div className="grid grid-cols-3 gap-4 mt-6">
           <SummaryCard label="Total Disetor" value={`${oneDecimalFormatter.format(totalLiters)} L`} />
-          <SummaryCard label="Total Poin" value={`${intFormatter.format(totalPoin)} Pts`} />
-          <SummaryCard label="Total Rupiah" value={`Rp ${intFormatter.format(totalRupiah)}`} />
+          <SummaryCard label="Poin Diterima" value={`${intFormatter.format(totalPoin)} Pts`} />
+          <SummaryCard label="Setara Rupiah" value={`Rp ${intFormatter.format(totalRupiah)}`} />
         </div>
       </header>
 
-      {/* Filter pills */}
       <div className="mt-8 flex flex-wrap gap-2">
-        {FILTERS.map((filter) => {
+        {availableFilters.map((filter) => {
           const isActive = filter === activeFilter;
           return (
             <button
               key={filter}
+              type="button"
               onClick={() => setActiveFilter(filter)}
               className={
                 isActive
@@ -85,9 +104,14 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions }) => {
         })}
       </div>
 
-      {/* Transaction list */}
-      <ul className="mt-6 flex flex-col gap-3">
-        {filteredTransactions.length === 0 ? (
+      <ul className="mt-6 flex flex-col gap-3" aria-label="Daftar transaksi">
+        {loading ? (
+          <>
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+          </>
+        ) : filteredTransactions.length === 0 ? (
           <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-10 flex flex-col items-center justify-center gap-3 text-center">
             <div className="bg-amber-50 rounded-full p-4">
               <Droplets size={28} className="text-amber-400" />
@@ -113,7 +137,21 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions }) => {
   );
 };
 
-// ──────────────────────────────────────────────────────────────────
+const SkeletonRow: React.FC = () => (
+  <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-4 flex items-center justify-between gap-3 animate-pulse">
+    <div className="flex items-center min-w-0 flex-1">
+      <div className="bg-cream-200 rounded-lg w-10 h-10 shrink-0" />
+      <div className="flex flex-col ml-3 min-w-0 flex-1 gap-2">
+        <div className="h-3.5 w-2/3 bg-cream-200 rounded" />
+        <div className="h-2.5 w-1/2 bg-cream-200/70 rounded" />
+      </div>
+    </div>
+    <div className="flex flex-col items-end gap-1.5 shrink-0">
+      <div className="h-3 w-16 bg-cream-200 rounded" />
+      <div className="h-4 w-14 bg-cream-200 rounded-full" />
+    </div>
+  </li>
+);
 
 const SummaryCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="bg-white border border-[#E8DEC4] rounded-xl p-4">
