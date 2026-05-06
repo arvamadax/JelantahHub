@@ -75,7 +75,11 @@ export function useFirebaseLogic(user: User | null, userData: UserData | null) {
       },
       (error) => {
         setTransactionsLoading(false);
-        handleFirestoreError(error, OperationType.LIST, `users/${user.uid}/transactions`);
+        try {
+          handleFirestoreError(error, OperationType.LIST, `users/${user.uid}/transactions`);
+        } catch {
+          /* swallow — error already logged inside handleFirestoreError */
+        }
       },
     );
 
@@ -104,8 +108,6 @@ export function useFirebaseLogic(user: User | null, userData: UserData | null) {
         pointsDelta: pointsAwarded,
         status: 'Verified',
         createdAt: serverTimestamp(),
-        volumeLiters,
-        nodeName,
       });
 
       const userRef = doc(db, 'users', user.uid);
@@ -114,10 +116,13 @@ export function useFirebaseLogic(user: User | null, userData: UserData | null) {
       });
 
       await batch.commit();
-      userData.points += pointsAwarded;
       return { ok: true };
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `users/${user.uid}/transactions`);
+      try {
+        handleFirestoreError(err, OperationType.CREATE, `users/${user.uid}/transactions`);
+      } catch {
+        /* swallow — error already logged inside handleFirestoreError */
+      }
       return { ok: false };
     }
   };
@@ -150,10 +155,13 @@ export function useFirebaseLogic(user: User | null, userData: UserData | null) {
       });
 
       await batch.commit();
-      userData.points -= cost;
       return { ok: true };
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `users/${user.uid}/transactions`);
+      try {
+        handleFirestoreError(err, OperationType.CREATE, `users/${user.uid}/transactions`);
+      } catch {
+        /* swallow — error already logged inside handleFirestoreError */
+      }
       return { ok: false, reason: 'firestore_error' };
     }
   };

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider, db, handleFirestoreError, OperationType } from '../services/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
 
 interface UserData {
   userId: string;
@@ -33,28 +33,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (!auth) {
-      console.warn("AuthContext: Firebase auth is not initialized. Skipping onAuthStateChanged.");
       setLoading(false);
       return;
     }
 
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        let userExists = false;
-        const userRef = doc(db, 'users', firebaseUser.uid);
-        try {
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            setUserData(userSnap.data() as UserData);
-            userExists = true;
-          }
-        } catch (error) {
-          handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
-        }
+    let unsubUserDoc: (() => void) | null = null;
 
-        if (!userExists) {
-          // Create user
+    const unsubAuth = auth.onAuthStateChanged((firebaseUser) => {
+      setUser(firebaseUser);
+
+      if (unsubUserDoc) {
+        unsubUserDoc();
+        unsubUserDoc = null;
+      }
+
+      if (!firebaseUser) {
+        setUserData(null);
+        setLoading(false);
+        return;
+      }
+
+      if (!db) {
+        setLoading(false);
+        return;
+      }
+
+      const userRef = doc(db, 'users', firebaseUser.uid);
+      let bootstrapTried = false;
+
+      unsubUserDoc = onSnapshot(
+        userRef,
+        async (snap) => {
+          if (snap.exists()) {
+            setUserData(snap.data() as UserData);
+            setLoading(false);
+            return;
+          }
+
+          if (bootstrapTried) {
+            setLoading(false);
+            return;
+          }
+          bootstrapTried = true;
+
           const newUserData: UserData = {
             userId: firebaseUser.uid,
             email: firebaseUser.email || '',
@@ -64,20 +85,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             await setDoc(userRef, {
               ...newUserData,
-              createdAt: serverTimestamp()
+              createdAt: serverTimestamp(),
             });
-            setUserData(newUserData);
           } catch (error) {
             handleFirestoreError(error, OperationType.CREATE, `users/${firebaseUser.uid}`);
+            setLoading(false);
           }
-        }
-      } else {
-        setUserData(null);
-      }
-      setLoading(false);
+        },
+        (error) => {
+          handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
+          setLoading(false);
+        },
+      );
     });
 
-    return unsubscribe;
+    return () => {
+      unsubAuth();
+      if (unsubUserDoc) unsubUserDoc();
+    };
   }, []);
 
   const signIn = async () => {
