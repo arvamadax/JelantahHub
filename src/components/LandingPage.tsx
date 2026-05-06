@@ -9,9 +9,13 @@ import {
   Zap,
   Search,
   MapPin,
+  Recycle,
+  Wallet,
 } from 'lucide-react';
 import { HeroCalculator } from './landing/HeroCalculator';
 import { AnimatePresence } from 'motion/react';
+import { MapPreview } from './MapPreview';
+import { Landmark, ShoppingBag, Home as HomeIcon } from 'lucide-react';
 
 type ProofStat = {
   label: string;
@@ -238,67 +242,8 @@ const PetaTitikSetor: React.FC = () => {
           </div>
 
           {/* RIGHT: stylized map preview */}
-          <div className="relative bg-forest-50 border border-[#E8DEC4] rounded-2xl h-full min-h-[320px] overflow-hidden">
-            <svg
-              viewBox="0 0 400 320"
-              preserveAspectRatio="xMidYMid slice"
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full"
-            >
-              <defs>
-                <pattern id="petaGrid" width="32" height="32" patternUnits="userSpaceOnUse">
-                  <path d="M32 0H0V32" fill="none" stroke="#A6CBB6" strokeOpacity="0.35" strokeWidth="0.6" />
-                </pattern>
-                <linearGradient id="petaSheen" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FBF6E9" stopOpacity="0" />
-                  <stop offset="100%" stopColor="#FBF6E9" stopOpacity="0.55" />
-                </linearGradient>
-              </defs>
-              <rect width="400" height="320" fill="#ECF5F0" />
-              <rect width="400" height="320" fill="url(#petaGrid)" />
-              {/* Abstract roads */}
-              <path d="M-20 90 Q120 70 200 120 T420 100" stroke="#A6CBB6" strokeWidth="6" fill="none" strokeLinecap="round" />
-              <path d="M40 -10 Q100 120 60 220 T100 340" stroke="#A6CBB6" strokeWidth="5" fill="none" strokeLinecap="round" />
-              <path d="M260 -10 Q220 140 320 200 T380 340" stroke="#A6CBB6" strokeWidth="5" fill="none" strokeLinecap="round" />
-              <path d="M-20 240 Q140 220 220 260 T420 230" stroke="#A6CBB6" strokeWidth="4" fill="none" strokeLinecap="round" />
-              {/* River */}
-              <path d="M-20 180 Q100 200 200 170 T420 200" stroke="#7AB394" strokeOpacity="0.45" strokeWidth="10" fill="none" strokeLinecap="round" />
-              <rect width="400" height="320" fill="url(#petaSheen)" />
-            </svg>
-            {/* Pins */}
-            {[
-              { top: '24%', left: '28%', label: 'Bank Sampah Melati', dist: '1.2 km', delay: '0s' },
-              { top: '48%', left: '60%', label: 'Pos Kumpul RT 04', dist: '0.8 km', delay: '0.6s' },
-              { top: '70%', left: '40%', label: 'Warung Bu Tejo', dist: '3.5 km', delay: '1.2s' },
-            ].map((pin) => (
-              <div
-                key={pin.label}
-                className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2"
-                style={{ top: pin.top, left: pin.left }}
-              >
-                <span className="relative flex">
-                  <span
-                    className="absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-60 animate-ping"
-                    style={{ animationDelay: pin.delay }}
-                  />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 ring-2 ring-cream-50" />
-                </span>
-                <span className="bg-cream-50 text-forest-900 text-[11px] font-semibold px-2 py-0.5 rounded-md shadow-[var(--shadow-md)] whitespace-nowrap">
-                  {pin.label} · {pin.dist}
-                </span>
-              </div>
-            ))}
-            {/* Footer caption */}
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
-              <span className="bg-cream-50/90 backdrop-blur-sm text-forest-900 font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
-                <MapPin size={12} className="text-amber-600" />
-                Bandung · 12 titik aktif
-              </span>
-              <span className="bg-cream-50/90 backdrop-blur-sm text-forest-700 font-medium px-2.5 py-1 rounded-full">
-                Live
-              </span>
-            </div>
-          </div>
+          <MapPreview className="h-full min-h-[320px]" />
+
         </div>
       </div>
     </section>
@@ -375,6 +320,27 @@ const LEGAL_CONTENT: Record<Exclude<LegalModal, null>, { title: string; body: Re
     ),
   },
 };
+
+const JourneyNode: React.FC<{ icon: React.ReactNode; label: string; tone: 'amber' | 'forest' }> = ({ icon, label, tone }) => (
+  <div className="flex items-center gap-2 shrink-0">
+    <span
+      className={
+        tone === 'amber'
+          ? 'w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center'
+          : 'w-9 h-9 rounded-full bg-forest-100 text-forest-700 flex items-center justify-center'
+      }
+    >
+      {icon}
+    </span>
+    <span className="text-xs font-semibold text-forest-900/75 uppercase tracking-wider">{label}</span>
+  </div>
+);
+
+const JourneyConnector: React.FC = () => (
+  <span className="flex-1 flex items-center justify-center">
+    <span className="block h-px w-full bg-gradient-to-r from-amber-200 via-forest-200 to-amber-200" />
+  </span>
+);
 
 const LegalModalView: React.FC<{ active: LegalModal; onClose: () => void }> = ({ active, onClose }) => {
   React.useEffect(() => {
@@ -625,13 +591,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
               </motion.div>
             </div>
 
-            {/* RIGHT: Interactive calculator */}
+            {/* RIGHT: Journey strip + Interactive calculator */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.26 }}
               className="md:col-span-5"
             >
+              <div
+                aria-hidden="true"
+                className="hidden md:flex items-center justify-between gap-2 px-4 mb-4 text-forest-900/65"
+              >
+                <JourneyNode icon={<Droplets size={16} />} label="Setor" tone="amber" />
+                <JourneyConnector />
+                <JourneyNode icon={<Recycle size={16} />} label="Daur" tone="forest" />
+                <JourneyConnector />
+                <JourneyNode icon={<Wallet size={16} />} label="Cair" tone="amber" />
+              </div>
               <HeroCalculator onCTA={onNavigateAuth} />
             </motion.div>
           </div>
@@ -763,24 +739,75 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateAuth }) => {
 
       {/* Mitra section */}
       <section id="mitra" className="py-16 md:py-20 bg-white border-t border-[#E8DEC4]">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6 text-center">
-          <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
-            UNTUK MITRA
-          </p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-forest-900 max-w-2xl mx-auto">
-            Bank sampah, RT, atau warung? Daftar jadi titik setor.
-          </h2>
-          <p className="mt-4 text-forest-900/70 max-w-prose mx-auto">
-            Dapatkan komisi per liter terkumpul + alat pengukur gratis.
-            Onboarding 3 hari kerja.
-          </p>
-          <a
-            href="mailto:mitra@jelantahhub.id"
-            className="mt-8 inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 font-bold shadow-[var(--shadow-forest)] transition-colors duration-150"
-          >
-            Hubungi Tim Mitra
-            <ArrowRight size={16} />
-          </a>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+          <div className="text-center max-w-2xl mx-auto">
+            <p className="text-amber-700 text-xs font-bold tracking-[0.12em] uppercase mb-3">
+              UNTUK MITRA
+            </p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-forest-900">
+              Bank sampah, RT, atau warung? Daftar jadi titik setor.
+            </h2>
+            <p className="mt-4 text-forest-900/70 max-w-prose mx-auto">
+              Dapatkan komisi per liter terkumpul + alat pengukur gratis. Onboarding 3 hari kerja.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {[
+              {
+                Icon: Landmark,
+                role: 'Bank Sampah',
+                tagline: 'Komisi 10% per liter',
+                detail: 'Dashboard kelola pickup + alat pengukur volume gratis untuk operasional rutin.',
+              },
+              {
+                Icon: ShoppingBag,
+                role: 'Warung Mitra',
+                tagline: 'Pemasukan tambahan',
+                detail: 'Sisa minyak dapur jadi sumber kas. Cocok untuk warung makan, bakso, gorengan.',
+              },
+              {
+                Icon: HomeIcon,
+                role: 'RT / RW',
+                tagline: 'Program eco-warga',
+                detail: 'Insentif komunal untuk pengurus + branding lingkungan untuk komplek perumahan.',
+              },
+            ].map((card) => (
+              <article
+                key={card.role}
+                className="bg-cream-50 border border-[#E8DEC4] rounded-2xl p-6 flex flex-col"
+              >
+                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
+                  <card.Icon size={20} />
+                </div>
+                <h3 className="font-display font-extrabold text-lg text-forest-900">
+                  {card.role}
+                </h3>
+                <p className="text-amber-700 text-sm font-semibold mt-1">
+                  {card.tagline}
+                </p>
+                <p className="text-sm text-forest-900/70 leading-relaxed mt-3">
+                  {card.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <a
+              href="mailto:mitra@jelantahhub.id"
+              className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 font-bold shadow-[var(--shadow-forest)] transition-colors duration-150"
+            >
+              Hubungi Tim Mitra
+              <ArrowRight size={16} />
+            </a>
+            <p className="mt-3 text-xs text-forest-900/55">
+              Atau email ke{' '}
+              <a href="mailto:mitra@jelantahhub.id" className="text-amber-700 font-semibold hover:text-amber-800">
+                mitra@jelantahhub.id
+              </a>
+            </p>
+          </div>
         </div>
       </section>
 

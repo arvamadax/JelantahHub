@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNodes, type NodeStatus, type NodeTipe } from '../../hooks/useNodes';
+import { MapPreview } from '../MapPreview';
 
 const FILTERS = ['Semua', 'Bank Sampah', 'Warung', 'Pos RT'] as const;
 type FilterPill = (typeof FILTERS)[number];
@@ -60,6 +61,11 @@ export const TitikKumpulPage: React.FC<TitikKumpulPageProps> = ({ onSetor }) => 
         <p className="mt-2 text-sm text-forest-900/60">
           {nodes.length} titik aktif di sekitarmu
         </p>
+
+        <MapPreview
+          className="mt-5 h-44 sm:h-52"
+          caption={`Bandung · ${nodes.length} titik`}
+        />
 
         {/* Search */}
         <div className="mt-4 relative">
