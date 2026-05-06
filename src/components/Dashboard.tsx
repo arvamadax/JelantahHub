@@ -9,6 +9,7 @@ import { NearbyNodeCard } from './NearbyNodeCard';
 import { BottomNav, type DashboardTab } from './BottomNav';
 import { RiwayatPage } from './dashboard/RiwayatPage';
 import { TitikKumpulPage } from './dashboard/TitikKumpulPage';
+import { SetorConfirmModal } from './dashboard/SetorConfirmModal';
 import { AvatarFallback } from './AvatarFallback';
 
 interface NodeProps {
@@ -56,8 +57,6 @@ const Toast: React.FC<{ toast: ToastState | null; onDismiss: () => void }> = ({ 
           >
             {toast.kind === 'success' ? (
               <CheckCircle2 size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
-            ) : toast.kind === 'error' ? (
-              <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
             ) : (
               <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
             )}
@@ -77,145 +76,15 @@ const Toast: React.FC<{ toast: ToastState | null; onDismiss: () => void }> = ({ 
   );
 };
 
-const SetorConfirmModal: React.FC<{
+const InfoModal: React.FC<{
   open: boolean;
   onClose: () => void;
-  onConfirm: (volumeLiters: number) => Promise<void>;
-}> = ({ open, onClose, onConfirm }) => {
-  const [liters, setLiters] = useState(5);
-  const [submitting, setSubmitting] = useState(false);
-  const points = liters * 100;
-
-  React.useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !submitting) onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [open, onClose, submitting]);
-
-  React.useEffect(() => {
-    if (open) setLiters(5);
-  }, [open]);
-
-  const handleConfirm = async () => {
-    setSubmitting(true);
-    try {
-      await onConfirm(liters);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] bg-forest-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center px-0 sm:px-4"
-          onClick={() => !submitting && onClose()}
-        >
-          <motion.div
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 16, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="setor-modal-title"
-            className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] flex flex-col"
-          >
-            <div className="px-6 pt-6 pb-3 flex items-start justify-between gap-3">
-              <div>
-                <h3 id="setor-modal-title" className="font-display font-extrabold text-xl text-forest-900">
-                  Setor Jelantah
-                </h3>
-                <p className="text-xs text-forest-900/60 mt-1">
-                  Konfirmasi volume yang akan kamu setor di node terdekat.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={submitting}
-                aria-label="Tutup"
-                className="shrink-0 w-9 h-9 rounded-full hover:bg-cream-100 flex items-center justify-center text-forest-900/70 disabled:opacity-50"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="px-6 pb-2">
-              <div className="bg-cream-50 border border-[#E8DEC4] rounded-xl p-4">
-                <p className="text-xs text-forest-900/60 mb-1">Volume jelantah</p>
-                <div className="flex items-baseline gap-2">
-                  <p className="font-display font-extrabold text-3xl text-forest-900 tabular-nums">{liters}</p>
-                  <p className="text-sm font-semibold text-forest-900/65">liter</p>
-                </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={20}
-                  step={1}
-                  value={liters}
-                  onChange={(e) => setLiters(Number(e.target.value))}
-                  aria-label="Volume liter"
-                  className="w-full mt-3 accent-amber-500"
-                />
-                <div className="flex justify-between text-xs text-forest-900/55 mt-1 tabular-nums">
-                  <span>1 L</span>
-                  <span>10 L</span>
-                  <span>20 L</span>
-                </div>
-              </div>
-
-              <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-amber-800/80">Poin yang akan kamu terima</p>
-                  <p className="font-display font-extrabold text-2xl text-amber-700 tabular-nums">
-                    +{points.toLocaleString('id-ID')} Pts
-                  </p>
-                </div>
-                <span className="text-xs font-bold text-amber-700 bg-amber-100 rounded-full px-3 py-1">
-                  Rp {(points * 100).toLocaleString('id-ID')}
-                </span>
-              </div>
-            </div>
-
-            <div className="px-6 py-5 flex flex-col-reverse sm:flex-row gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={submitting}
-                className="flex-1 h-11 rounded-xl border border-[#E8DEC4] text-forest-900/80 font-semibold text-sm hover:bg-cream-50 disabled:opacity-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirm}
-                disabled={submitting}
-                className="flex-1 h-11 rounded-xl bg-forest-700 hover:bg-forest-800 disabled:opacity-70 disabled:cursor-not-allowed text-cream-50 font-bold text-sm shadow-[var(--shadow-forest)] transition-colors"
-              >
-                {submitting ? 'Menyimpan…' : 'Konfirmasi Setor'}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-const TentangModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  showLogo?: boolean;
+  labelledById?: string;
+}> = ({ open, onClose, title, subtitle, children, showLogo = false, labelledById = 'info-modal-title' }) => {
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -247,22 +116,24 @@ const TentangModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="tentang-modal-title"
+            aria-labelledby={labelledById}
             className="bg-cream-100 w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] max-h-[85vh] flex flex-col"
           >
             <div className="px-6 pt-6 pb-3 border-b border-[#E8DEC4] flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <img
-                  src="/logos/jelantahhub-256.png"
-                  alt=""
-                  aria-hidden="true"
-                  className="w-12 h-12 object-contain"
-                />
+                {showLogo && (
+                  <img
+                    src="/logos/jelantahhub-256.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="w-12 h-12 object-contain"
+                  />
+                )}
                 <div>
-                  <h3 id="tentang-modal-title" className="font-display font-extrabold text-xl text-forest-900">
-                    Tentang JelantahHub
+                  <h3 id={labelledById} className="font-display font-extrabold text-xl text-forest-900">
+                    {title}
                   </h3>
-                  <p className="text-xs text-forest-900/60">Versi 1.0.0 · MVP</p>
+                  {subtitle && <p className="text-xs text-forest-900/60">{subtitle}</p>}
                 </div>
               </div>
               <button
@@ -275,17 +146,7 @@ const TentangModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
               </button>
             </div>
             <div className="px-6 py-5 overflow-y-auto flex flex-col gap-3 text-sm text-forest-900/85 leading-relaxed">
-              <p>
-                JelantahHub adalah platform eco-fintech sirkular yang menghubungkan rumah tangga,
-                warung, dan UMKM dengan jaringan titik kumpul jelantah serta kilang biofuel mitra.
-              </p>
-              <p>
-                Misi kami: mengurangi pencemaran air akibat jelantah yang dibuang sembarangan,
-                sekaligus memberi nilai ekonomi bagi keluarga Indonesia.
-              </p>
-              <p className="text-xs text-forest-900/60">
-                Dibangun untuk IYREF 2026 Hackathon.
-              </p>
+              {children}
             </div>
           </motion.div>
         </motion.div>
@@ -293,6 +154,29 @@ const TentangModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
     </AnimatePresence>
   );
 };
+
+const FAQ_ITEMS = [
+  {
+    q: 'Bagaimana cara setor jelantah?',
+    a: 'Tekan tombol Setor di beranda, pilih volume liter, lalu konfirmasi. Atau buka tab Map Node, pilih titik kumpul terdekat, dan tekan "Setor di Sini".',
+  },
+  {
+    q: 'Kapan poin masuk ke akun saya?',
+    a: 'Poin langsung masuk setelah konfirmasi setoran. Untuk setoran dengan verifikasi node, status akan berubah menjadi Verified dalam waktu maksimal 1×24 jam.',
+  },
+  {
+    q: 'Bagaimana cara menukar poin?',
+    a: 'Buka beranda, tekan tombol Tukar 200 Pts. Voucher GoPay akan masuk dalam waktu kurang dari 5 menit. Minimum penukaran 200 poin.',
+  },
+  {
+    q: 'Apakah jelantah saya benar-benar diolah jadi biofuel?',
+    a: 'Ya. Semua jelantah yang terkumpul dikirim ke kilang biofuel mitra resmi. Kamu bisa cek dampak agregat di section Dampak halaman utama.',
+  },
+  {
+    q: 'Berapa banyak yang bisa saya setor?',
+    a: 'Tidak ada batas atas. Rata-rata pengguna aktif menyetor 5–25 liter per bulan. Pemilik warung biasanya 30–200 liter per bulan.',
+  },
+];
 
 const SkeletonRow: React.FC = () => (
   <li className="bg-white border border-[#E8DEC4] rounded-xl p-4 flex items-center gap-3 animate-pulse">
@@ -308,9 +192,10 @@ const SkeletonRow: React.FC = () => (
 const ProfilPage: React.FC<{
   onLogout: () => void;
   onAbout: () => void;
+  onFAQ: () => void;
   onComingSoon: () => void;
   onShowQR: () => void;
-}> = ({ onLogout, onAbout, onComingSoon, onShowQR }) => {
+}> = ({ onLogout, onAbout, onFAQ, onComingSoon, onShowQR }) => {
   const { user, userData } = useAuth();
   const memberCode = user?.uid ? `JH-${user.uid.substring(0, 4).toUpperCase()}` : 'JH-----';
 
@@ -357,7 +242,7 @@ const ProfilPage: React.FC<{
         {[
           { label: 'Tampilkan QR Code', sub: `ID: ${memberCode}`, action: onShowQR },
           { label: 'Notifikasi', sub: 'Atur preferensi notifikasi', action: onComingSoon },
-          { label: 'Bantuan & FAQ', sub: 'Pertanyaan yang sering ditanyakan', action: onComingSoon },
+          { label: 'Bantuan & FAQ', sub: 'Pertanyaan yang sering ditanyakan', action: onFAQ },
           { label: 'Tentang JelantahHub', sub: 'Versi 1.0.0', action: onAbout },
         ].map((item) => (
           <button
@@ -419,19 +304,29 @@ export const Dashboard: React.FC = () => {
 
   const [tab, setTab] = useState<DashboardTab>('home');
   const [setorOpen, setSetorOpen] = useState(false);
+  const [setorNodeName, setSetorNodeName] = useState<string>('Bank Sampah Melati');
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [faqOpen, setFAQOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const showToast = useCallback((kind: ToastKind, message: string) => {
     setToast({ kind, message });
   }, []);
 
+  const openSetor = useCallback((nodeName?: string) => {
+    setSetorNodeName(nodeName ?? 'Bank Sampah Melati');
+    setSetorOpen(true);
+  }, []);
+
   const handleConfirmSetor = useCallback(
-    async (volumeLiters: number) => {
-      const result = await handleSetor({ volumeLiters, nodeName: 'Bank Sampah Melati' });
+    async (volumeLiters: number, nodeName: string) => {
+      const result = await handleSetor({ volumeLiters, nodeName });
       setSetorOpen(false);
       if (result.ok) {
-        showToast('success', `Setoran ${volumeLiters} L tersimpan. +${(volumeLiters * 100).toLocaleString('id-ID')} poin masuk.`);
+        showToast(
+          'success',
+          `Setoran ${volumeLiters} L di ${nodeName} tersimpan. +${(volumeLiters * 100).toLocaleString('id-ID')} poin masuk.`,
+        );
       } else {
         showToast('error', 'Gagal menyimpan setoran. Coba lagi sebentar.');
       }
@@ -468,21 +363,12 @@ export const Dashboard: React.FC = () => {
           {tab === 'riwayat' ? (
             <RiwayatPage transactions={transactions} loading={transactionsLoading} />
           ) : tab === 'map' ? (
-            <TitikKumpulPage
-              onSetor={(nodeName) => {
-                handleSetor({ nodeName, volumeLiters: 5 }).then((res) => {
-                  if (res.ok) {
-                    showToast('success', `Setoran tercatat di ${nodeName}. +500 poin masuk.`);
-                  } else {
-                    showToast('error', 'Gagal menyimpan setoran. Coba lagi sebentar.');
-                  }
-                });
-              }}
-            />
+            <TitikKumpulPage onSetor={openSetor} />
           ) : tab === 'profil' ? (
             <ProfilPage
               onLogout={logOut}
               onAbout={() => setAboutOpen(true)}
+              onFAQ={() => setFAQOpen(true)}
               onComingSoon={() => showToast('info', 'Fitur ini sedang dalam pengembangan.')}
               onShowQR={() => showToast('info', 'QR Code akan tersedia di update berikutnya.')}
             />
@@ -507,7 +393,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      onClick={() => setSetorOpen(true)}
+                      onClick={() => openSetor()}
                       className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-cream-50 text-sm font-bold rounded-xl transition-colors duration-150 text-center min-h-[44px]"
                     >
                       Setor
@@ -523,7 +409,6 @@ export const Dashboard: React.FC = () => {
                 </div>
               </motion.section>
 
-              {/* QR Widget Mini */}
               <button
                 type="button"
                 onClick={() => setTab('profil')}
@@ -544,9 +429,7 @@ export const Dashboard: React.FC = () => {
               </button>
             </div>
 
-            {/* Right Column */}
             <div className="md:col-span-5 space-y-6">
-              {/* Nearby Nodes */}
               <section>
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h3 className="text-base font-bold text-forest-900 font-display">Titik Kumpul</h3>
@@ -571,7 +454,6 @@ export const Dashboard: React.FC = () => {
                 </div>
               </section>
 
-              {/* Transactions */}
               <section className="pb-4">
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h3 className="text-base font-bold text-forest-900 font-display">Riwayat</h3>
@@ -634,16 +516,65 @@ export const Dashboard: React.FC = () => {
       <BottomNav
         activeTab={tab}
         onTabChange={setTab}
-        onQuickSetor={() => setSetorOpen(true)}
+        onQuickSetor={() => openSetor()}
       />
 
       <SetorConfirmModal
         open={setorOpen}
+        defaultNodeName={setorNodeName}
         onClose={() => setSetorOpen(false)}
         onConfirm={handleConfirmSetor}
       />
 
-      <TentangModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <InfoModal
+        open={aboutOpen}
+        onClose={() => setAboutOpen(false)}
+        title="Tentang JelantahHub"
+        subtitle="Versi 1.0.0 · MVP"
+        showLogo
+        labelledById="about-modal-title"
+      >
+        <p>
+          JelantahHub adalah platform eco-fintech sirkular yang menghubungkan rumah tangga,
+          warung, dan UMKM dengan jaringan titik kumpul jelantah serta kilang biofuel mitra.
+        </p>
+        <p>
+          Misi kami: mengurangi pencemaran air akibat jelantah yang dibuang sembarangan,
+          sekaligus memberi nilai ekonomi bagi keluarga Indonesia.
+        </p>
+        <p className="text-xs text-forest-900/60">
+          Dibangun untuk IYREF 2026 Hackathon.
+        </p>
+      </InfoModal>
+
+      <InfoModal
+        open={faqOpen}
+        onClose={() => setFAQOpen(false)}
+        title="Bantuan & FAQ"
+        subtitle="Pertanyaan yang sering ditanyakan"
+        labelledById="faq-modal-title"
+      >
+        {FAQ_ITEMS.map((item, idx) => (
+          <details
+            key={item.q}
+            className="bg-white border border-[#E8DEC4] rounded-xl px-4 py-3 group"
+            {...(idx === 0 ? { open: true } : {})}
+          >
+            <summary className="font-semibold text-forest-900 text-sm cursor-pointer flex items-start justify-between gap-3 list-none">
+              <span className="flex-1">{item.q}</span>
+              <span className="shrink-0 text-amber-600 mt-0.5 transition-transform group-open:rotate-180">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </summary>
+            <p className="mt-2 text-sm text-forest-900/75 leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+        <p className="text-xs text-forest-900/60 mt-2">
+          Tidak menemukan jawabanmu? Hubungi <a href="mailto:halo@jelantahhub.id" className="text-amber-700 font-semibold">halo@jelantahhub.id</a>.
+        </p>
+      </InfoModal>
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>
