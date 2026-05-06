@@ -10,6 +10,7 @@ import { BottomNav, type DashboardTab } from './BottomNav';
 import { RiwayatPage } from './dashboard/RiwayatPage';
 import { TitikKumpulPage } from './dashboard/TitikKumpulPage';
 import { SetorConfirmModal } from './dashboard/SetorConfirmModal';
+import { QRModal } from './dashboard/QRModal';
 import { AvatarFallback } from './AvatarFallback';
 
 interface NodeProps {
@@ -307,6 +308,7 @@ export const Dashboard: React.FC = () => {
   const [setorNodeName, setSetorNodeName] = useState<string>('Bank Sampah Melati');
   const [aboutOpen, setAboutOpen] = useState(false);
   const [faqOpen, setFAQOpen] = useState(false);
+  const [qrOpen, setQROpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const showToast = useCallback((kind: ToastKind, message: string) => {
@@ -370,7 +372,7 @@ export const Dashboard: React.FC = () => {
               onAbout={() => setAboutOpen(true)}
               onFAQ={() => setFAQOpen(true)}
               onComingSoon={() => showToast('info', 'Fitur ini sedang dalam pengembangan.')}
-              onShowQR={() => showToast('info', 'QR Code akan tersedia di update berikutnya.')}
+              onShowQR={() => setQROpen(true)}
             />
           ) : (
           <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-12 md:gap-6">
@@ -411,7 +413,7 @@ export const Dashboard: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setTab('profil')}
+                onClick={() => setQROpen(true)}
                 className="w-full bg-white rounded-2xl border border-[#E8DEC4] p-4 shadow-sm flex items-center justify-between hover:bg-cream-50 active:bg-cream-100 transition-colors min-h-[44px] text-left"
               >
                 <div className="flex items-center gap-3">
@@ -575,6 +577,13 @@ export const Dashboard: React.FC = () => {
           Tidak menemukan jawabanmu? Hubungi <a href="mailto:halo@jelantahhub.id" className="text-amber-700 font-semibold">halo@jelantahhub.id</a>.
         </p>
       </InfoModal>
+
+      <QRModal
+        open={qrOpen}
+        onClose={() => setQROpen(false)}
+        uid={user.uid}
+        userName={userData?.name}
+      />
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>
