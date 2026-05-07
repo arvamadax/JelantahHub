@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Home, MapPin, PlusCircle, History, User as UserIcon } from 'lucide-react';
 
 export type DashboardTab = 'home' | 'map' | 'riwayat' | 'profil';
@@ -21,7 +21,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange, on
     }`;
 
   return (
-    <nav className="fixed bottom-0 w-full bg-white border-t border-[#E8DEC4] pb-safe pt-2 px-6 flex justify-between items-center z-50 md:hidden">
+    <nav className="fixed bottom-0 w-full bg-white border-t border-border pb-safe pt-2 px-6 flex justify-between items-center z-50 md:hidden">
       <button onClick={() => onTabChange('home')} className={tabClass('home')}>
         <Home size={22} className="mb-1" />
         <span className="text-[10px] font-bold">Beranda</span>

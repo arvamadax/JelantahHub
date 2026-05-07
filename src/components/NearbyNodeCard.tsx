@@ -1,8 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import { MapPin } from 'lucide-react';
 
 export const NearbyNodeCard = ({ title, distance, isOpen, icon: Icon }: { title: string, distance: string, isOpen: boolean, icon: any }) => (
-  <div className="bg-white rounded-xl border border-[#E8DEC4] p-3 hover:shadow-md active:bg-cream-50 active:scale-[0.99] transition-all cursor-pointer flex items-center gap-3 min-h-[64px]">
+  <div className="bg-white rounded-xl border border-border p-3 hover:shadow-md active:bg-cream-50 active:scale-[0.99] transition-all cursor-pointer flex items-center gap-3 min-h-[64px]">
     <div className="w-10 h-10 rounded-lg bg-cream-50 flex items-center justify-center text-forest-700 shrink-0">
       <Icon size={20} />
     </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -36,7 +36,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
 
   return (
     <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
-      <header className="sticky top-0 z-30 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4]">
+      <header className="sticky top-0 z-30 h-16 bg-cream-100/85 backdrop-blur-md border-b border-border">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 md:px-6 h-full">
           <button
             onClick={onBack}
@@ -65,7 +65,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md bg-white rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] p-8"
+          className="w-full max-w-md bg-white rounded-2xl border border-border shadow-[var(--shadow-lg)] p-8"
         >
           <div className="text-center">
             <img
@@ -131,16 +131,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
             )}
 
             <div className="relative flex items-center gap-3 my-1">
-              <div className="flex-1 h-px bg-[#E8DEC4]" />
+              <div className="flex-1 h-px bg-border" />
               <span className="text-xs text-forest-900/60">opsi lain</span>
-              <div className="flex-1 h-px bg-[#E8DEC4]" />
+              <div className="flex-1 h-px bg-border" />
             </div>
 
             <button
               type="button"
               disabled
               aria-disabled="true"
-              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-cream-50 border border-dashed border-[#E8DEC4] text-forest-900/60 font-semibold rounded-xl cursor-not-allowed min-h-[56px]"
+              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-cream-50 border border-dashed border-border text-forest-900/60 font-semibold rounded-xl cursor-not-allowed min-h-[56px]"
             >
               Login Nomor HP
               <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -156,8 +156,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onBack }) => {
 
           <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-center">
             <p className="text-xs text-amber-800">
-              💰 Rata-rata pengguna aktif mendapat{' '}
-              <strong>Rp 87.000/bulan</strong>
+              💰 Setiap <strong>5 L jelantah</strong> = <strong>Rp 25.000</strong> +{' '}
+              <strong>12 kg CO₂</strong> dihindari
             </p>
           </div>
 

@@ -1,15 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { Store, Utensils, ArrowUpRight, QrCode, Droplets, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+﻿import React, { useState, useCallback, useMemo } from 'react';
+import { Store, Utensils, QrCode, Droplets, X, AlertCircle, CheckCircle2, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useFirebaseLogic, type ActivityTransaction } from '../hooks/useFirebaseLogic';
-import { TopBar } from './TopBar';
+import { useNodes } from '../hooks/useNodes';
+import { TopBar, type NotificationItem } from './TopBar';
 import { ActivityItem } from './ActivityItem';
 import { NearbyNodeCard } from './NearbyNodeCard';
 import { BottomNav, type DashboardTab } from './BottomNav';
 import { RiwayatPage } from './dashboard/RiwayatPage';
 import { TitikKumpulPage } from './dashboard/TitikKumpulPage';
 import { SetorConfirmModal } from './dashboard/SetorConfirmModal';
+import { TukarRewardModal } from './dashboard/TukarRewardModal';
 import { QRModal } from './dashboard/QRModal';
 import { AvatarFallback } from './AvatarFallback';
 
@@ -45,7 +47,7 @@ const Toast: React.FC<{ toast: ToastState | null; onDismiss: () => void }> = ({ 
           transition={{ duration: 0.2 }}
           role="status"
           aria-live="polite"
-          className="fixed left-1/2 -translate-x-1/2 bottom-24 md:bottom-8 z-[70] w-[calc(100%-2rem)] max-w-sm"
+          className="fixed left-1/2 -translate-x-1/2 bottom-28 md:bottom-8 z-[70] w-[calc(100%-2rem)] max-w-sm"
         >
           <div
             className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-[var(--shadow-lg)] ${
@@ -118,9 +120,9 @@ const InfoModal: React.FC<{
             role="dialog"
             aria-modal="true"
             aria-labelledby={labelledById}
-            className="bg-cream-100 w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] max-h-[85vh] flex flex-col"
+            className="bg-cream-100 w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-border shadow-[var(--shadow-lg)] max-h-[85vh] flex flex-col"
           >
-            <div className="px-6 pt-6 pb-3 border-b border-[#E8DEC4] flex items-start justify-between gap-3">
+            <div className="px-6 pt-6 pb-3 border-b border-border flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 {showLogo && (
                   <img
@@ -180,7 +182,7 @@ const FAQ_ITEMS = [
 ];
 
 const SkeletonRow: React.FC = () => (
-  <li className="bg-white border border-[#E8DEC4] rounded-xl p-4 flex items-center gap-3 animate-pulse">
+  <li className="bg-white border border-border rounded-xl p-4 flex items-center gap-3 animate-pulse">
     <div className="w-10 h-10 rounded-full bg-cream-200" />
     <div className="flex-1 space-y-2">
       <div className="h-3.5 w-2/3 bg-cream-200 rounded" />
@@ -206,7 +208,7 @@ const ProfilPage: React.FC<{
         Profil
       </h1>
 
-      <div className="bg-white border border-[#E8DEC4] rounded-2xl p-6 flex items-center gap-4">
+      <div className="bg-white border border-border rounded-2xl p-6 flex items-center gap-4">
         <AvatarFallback
           name={userData?.name || user?.displayName || null}
           photoURL={user?.photoURL ?? null}
@@ -225,13 +227,13 @@ const ProfilPage: React.FC<{
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white border border-[#E8DEC4] rounded-2xl p-4 text-center">
+        <div className="bg-white border border-border rounded-2xl p-4 text-center">
           <p className="font-display font-extrabold text-2xl text-amber-500 tabular-nums">
             {userData?.points?.toLocaleString('id-ID') || 0}
           </p>
           <p className="text-xs text-forest-900/60 mt-1">Total Poin</p>
         </div>
-        <div className="bg-white border border-[#E8DEC4] rounded-2xl p-4 text-center">
+        <div className="bg-white border border-border rounded-2xl p-4 text-center">
           <p className="font-display font-extrabold text-lg text-forest-700 tabular-nums tracking-wide">
             {memberCode}
           </p>
@@ -239,7 +241,7 @@ const ProfilPage: React.FC<{
         </div>
       </div>
 
-      <div className="bg-white border border-[#E8DEC4] rounded-2xl overflow-hidden divide-y divide-[#E8DEC4]">
+      <div className="bg-white border border-border rounded-2xl overflow-hidden divide-y divide-border">
         {[
           { label: 'Tampilkan QR Code', sub: `ID: ${memberCode}`, action: onShowQR },
           { label: 'Notifikasi', sub: 'Atur preferensi notifikasi', action: onComingSoon },
@@ -276,7 +278,7 @@ const ProfilPage: React.FC<{
 
       <button
         onClick={onLogout}
-        className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-[#E8DEC4] rounded-2xl text-red-500 font-semibold text-sm hover:bg-red-50 active:bg-red-100 transition-colors min-h-[56px]"
+        className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-border rounded-2xl text-red-500 font-semibold text-sm hover:bg-red-50 active:bg-red-100 transition-colors min-h-[56px]"
       >
         <svg
           width="16"
@@ -309,7 +311,42 @@ export const Dashboard: React.FC = () => {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [faqOpen, setFAQOpen] = useState(false);
   const [qrOpen, setQROpen] = useState(false);
+  const [tukarOpen, setTukarOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  const { nodes: liveNodes } = useNodes(user);
+  const setorNodeOptions = useMemo(
+    () => liveNodes.filter((n) => n.status === 'open').slice(0, 8).map((n) => ({ id: n.id, nama: n.nama })),
+    [liveNodes],
+  );
+
+  const notifications = useMemo<NotificationItem[]>(() => {
+    if (!transactions || transactions.length === 0) return [];
+    const now = Date.now();
+    return transactions.slice(0, 5).map((tx) => {
+      const ts = tx.createdAt;
+      const date: Date | null = ts && typeof ts.toDate === 'function' ? ts.toDate() : null;
+      const ageMs = date ? now - date.getTime() : Infinity;
+      const isSetor = tx.type === 'setor';
+      let time = 'Baru saja';
+      if (date) {
+        const min = Math.floor(ageMs / 60000);
+        if (min < 2) time = 'Baru saja';
+        else if (min < 60) time = `${min} menit lalu`;
+        else if (min < 1440) time = `${Math.floor(min / 60)} jam lalu`;
+        else time = `${Math.floor(min / 1440)} hari lalu`;
+      }
+      return {
+        id: tx.id,
+        title: isSetor ? 'Setoran tersimpan' : 'Reward ditukar',
+        body: isSetor
+          ? `${tx.subtitle} · +${tx.pointsDelta.toLocaleString('id-ID')} poin masuk`
+          : `${tx.subtitle} · ${tx.pointsDelta.toLocaleString('id-ID')} Pts`,
+        time,
+        isNew: ageMs < 24 * 3600 * 1000,
+      };
+    });
+  }, [transactions]);
 
   const showToast = useCallback((kind: ToastKind, message: string) => {
     setToast({ kind, message });
@@ -336,18 +373,23 @@ export const Dashboard: React.FC = () => {
     [handleSetor, showToast],
   );
 
-  const handleTukarClick = useCallback(async () => {
-    const result = await handleTukar(200);
-    if (result.ok) {
-      showToast('success', '200 poin berhasil ditukar dengan voucher GoPay.');
-    } else {
-      if (result.reason === 'insufficient_points') {
+  const handleConfirmTukar = useCallback(
+    async (cost: number, partnerLabel: string) => {
+      const result = await handleTukar(cost);
+      setTukarOpen(false);
+      if (result.ok) {
+        showToast(
+          'success',
+          `${cost.toLocaleString('id-ID')} poin berhasil ditukar dengan voucher ${partnerLabel}.`,
+        );
+      } else if (result.reason === 'insufficient_points') {
         showToast('error', 'Poin belum cukup. Setor lebih banyak untuk tukar reward.');
       } else {
         showToast('error', 'Gagal menukar poin. Coba lagi sebentar.');
       }
-    }
-  }, [handleTukar, showToast]);
+    },
+    [handleTukar, showToast],
+  );
 
   const [nodes] = useState<NodeProps[]>([
     { id: '1', name: 'Bank Sampah Melati', distance: '1.2 km', isOpen: true, icon: 'Store' },
@@ -358,7 +400,12 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] w-full bg-cream-100 flex flex-col">
-      <TopBar onLogout={logOut} activeTab={tab} onTabChange={setTab} />
+      <TopBar
+        onLogout={logOut}
+        activeTab={tab}
+        onTabChange={setTab}
+        notifications={notifications}
+      />
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden pt-24 pb-28 md:pb-12 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
@@ -402,10 +449,10 @@ export const Dashboard: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={handleTukarClick}
+                      onClick={() => setTukarOpen(true)}
                       className="flex-1 py-3 bg-transparent border border-cream-50/30 hover:border-cream-50/60 text-cream-50 text-sm font-bold rounded-xl transition-colors duration-150 text-center min-h-[44px]"
                     >
-                      Tukar 200 Pts
+                      Tukar Poin
                     </button>
                   </div>
                 </div>
@@ -414,7 +461,7 @@ export const Dashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setQROpen(true)}
-                className="w-full bg-white rounded-2xl border border-[#E8DEC4] p-4 shadow-sm flex items-center justify-between hover:bg-cream-50 active:bg-cream-100 transition-colors min-h-[44px] text-left"
+                className="w-full bg-white rounded-2xl border border-border p-4 shadow-sm flex items-center justify-between hover:bg-cream-50 active:bg-cream-100 transition-colors min-h-[44px] text-left"
               >
                 <div className="flex items-center gap-3">
                   <div className="bg-forest-50 p-2 rounded-lg text-forest-700">
@@ -427,7 +474,7 @@ export const Dashboard: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <ArrowUpRight size={16} className="text-forest-900/45" />
+                <Maximize2 size={16} className="text-forest-900/55" />
               </button>
             </div>
 
@@ -460,15 +507,15 @@ export const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h3 className="text-base font-bold text-forest-900 font-display">Riwayat</h3>
                 </div>
-                <div className="bg-white rounded-2xl border border-[#E8DEC4] shadow-sm overflow-hidden">
+                <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
                   {transactionsLoading ? (
-                    <ul className="divide-y divide-[#E8DEC4]">
+                    <ul className="divide-y divide-border">
                       <SkeletonRow />
                       <SkeletonRow />
                       <SkeletonRow />
                     </ul>
                   ) : (
-                    <ul className="divide-y divide-[#E8DEC4]">
+                    <ul className="divide-y divide-border">
                       {transactions.length > 0 ? (
                         transactions.slice(0, 3).map((tx: ActivityTransaction) => (
                           <ActivityItem
@@ -498,7 +545,7 @@ export const Dashboard: React.FC = () => {
                     </ul>
                   )}
                   {!transactionsLoading && transactions.length > 0 && (
-                    <div className="p-3 bg-cream-50 text-center border-t border-[#E8DEC4]">
+                    <div className="p-3 bg-cream-50 text-center border-t border-border">
                       <button
                         onClick={() => setTab('riwayat')}
                         className="text-amber-700 hover:text-amber-800 text-xs font-bold min-h-[30px] px-4 transition-colors duration-150"
@@ -524,8 +571,16 @@ export const Dashboard: React.FC = () => {
       <SetorConfirmModal
         open={setorOpen}
         defaultNodeName={setorNodeName}
+        availableNodes={setorNodeOptions}
         onClose={() => setSetorOpen(false)}
         onConfirm={handleConfirmSetor}
+      />
+
+      <TukarRewardModal
+        open={tukarOpen}
+        currentPoints={userData?.points ?? 0}
+        onClose={() => setTukarOpen(false)}
+        onConfirm={handleConfirmTukar}
       />
 
       <InfoModal
@@ -559,7 +614,7 @@ export const Dashboard: React.FC = () => {
         {FAQ_ITEMS.map((item, idx) => (
           <details
             key={item.q}
-            className="bg-white border border-[#E8DEC4] rounded-xl px-4 py-3 group"
+            className="bg-white border border-border rounded-xl px-4 py-3 group"
             {...(idx === 0 ? { open: true } : {})}
           >
             <summary className="font-semibold text-forest-900 text-sm cursor-pointer flex items-start justify-between gap-3 list-none">

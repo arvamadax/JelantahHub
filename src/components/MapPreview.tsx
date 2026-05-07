@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { MapPin } from 'lucide-react';
 
 interface Pin {
@@ -29,7 +29,7 @@ export const MapPreview: React.FC<MapPreviewProps> = ({
   showLiveBadge = true,
 }) => {
   return (
-    <div className={`relative bg-forest-50 border border-[#E8DEC4] rounded-2xl overflow-hidden ${className}`}>
+    <div className={`relative bg-forest-50 border border-border rounded-2xl overflow-hidden ${className}`}>
       <svg
         viewBox="0 0 400 320"
         preserveAspectRatio="xMidYMid slice"

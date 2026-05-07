@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   Search,
   MapPin,
@@ -80,7 +80,7 @@ export const TitikKumpulPage: React.FC<TitikKumpulPageProps> = ({ onSetor }) => 
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama atau alamat..."
             aria-label="Cari titik kumpul"
-            className="w-full bg-white border border-[#E8DEC4] rounded-xl pl-10 pr-4 py-3 text-sm text-forest-900 placeholder:text-forest-900/40 focus:outline-none focus:border-forest-300 focus:ring-2 focus:ring-amber-500/20 transition-colors duration-150"
+            className="w-full bg-white border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-forest-900 placeholder:text-forest-900/40 focus:outline-none focus:border-forest-300 focus:ring-2 focus:ring-amber-500/20 transition-colors duration-150"
           />
         </div>
 
@@ -95,7 +95,7 @@ export const TitikKumpulPage: React.FC<TitikKumpulPageProps> = ({ onSetor }) => 
                 className={
                   isActive
                     ? 'rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap bg-forest-700 text-cream-50 transition-colors duration-150'
-                    : 'rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap bg-white border border-[#E8DEC4] text-forest-900/70 hover:text-forest-900 hover:border-forest-200 transition-colors duration-150'
+                    : 'rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap bg-white border border-border text-forest-900/70 hover:text-forest-900 hover:border-forest-200 transition-colors duration-150'
                 }
               >
                 {f}
@@ -127,7 +127,7 @@ const TitikCard: React.FC<{
   const isOpen = titik.status === 'open';
 
   return (
-    <article className="bg-white border border-[#E8DEC4] rounded-xl p-5 hover:shadow-[var(--shadow-md)] transition-shadow duration-200 flex flex-col">
+    <article className="bg-white border border-border rounded-xl p-5 hover:shadow-[var(--shadow-md)] transition-shadow duration-200 flex flex-col">
       <div className="flex justify-between items-start gap-3">
         <div className="flex items-start min-w-0 flex-1">
           <div className="bg-amber-50 text-amber-600 rounded-lg p-2 w-9 h-9 flex items-center justify-center shrink-0">
@@ -145,7 +145,7 @@ const TitikCard: React.FC<{
         <StatusBadge status={titik.status} />
       </div>
 
-      <div className="border-t border-[#E8DEC4] my-4" />
+      <div className="border-t border-border my-4" />
 
       <div className="grid grid-cols-3 gap-2 text-center">
         <Stat label="Jarak" value={titik.jarak} />

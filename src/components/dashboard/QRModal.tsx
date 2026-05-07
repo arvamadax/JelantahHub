@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Copy, CheckCircle2 } from 'lucide-react';
 import QRCode from 'react-qr-code';
@@ -13,7 +13,7 @@ interface QRModalProps {
 export const QRModal: React.FC<QRModalProps> = ({ open, onClose, uid, userName }) => {
   const memberCode = uid ? `JH-${uid.substring(0, 8).toUpperCase()}` : 'JH-DEMO';
   const qrPayload = uid
-    ? `https://jelantah-hub.vercel.app/m/${uid}`
+    ? `https://jelantah-hub.vercel.app/?ref=${memberCode}`
     : 'https://jelantah-hub.vercel.app';
 
   const [copied, setCopied] = React.useState(false);
@@ -66,7 +66,7 @@ export const QRModal: React.FC<QRModalProps> = ({ open, onClose, uid, userName }
             role="dialog"
             aria-modal="true"
             aria-labelledby="qr-modal-title"
-            className="bg-cream-100 w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl border border-[#E8DEC4] shadow-[var(--shadow-lg)] flex flex-col"
+            className="bg-cream-100 w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl border border-border shadow-[var(--shadow-lg)] flex flex-col"
           >
             <div className="px-6 pt-6 pb-3 flex items-start justify-between gap-3">
               <div>
@@ -88,7 +88,7 @@ export const QRModal: React.FC<QRModalProps> = ({ open, onClose, uid, userName }
             </div>
 
             <div className="px-6 pb-4 flex flex-col items-center">
-              <div className="bg-cream-50 border border-[#E8DEC4] rounded-2xl p-5 shadow-[var(--shadow-md)]">
+              <div className="bg-cream-50 border border-border rounded-2xl p-5 shadow-[var(--shadow-md)]">
                 <QRCode
                   value={qrPayload}
                   size={208}
@@ -108,7 +108,7 @@ export const QRModal: React.FC<QRModalProps> = ({ open, onClose, uid, userName }
               <button
                 type="button"
                 onClick={handleCopy}
-                className="mt-3 inline-flex items-center gap-2 bg-white border border-[#E8DEC4] rounded-full px-4 py-2 text-sm font-bold text-forest-700 hover:bg-cream-50 transition-colors"
+                className="mt-3 inline-flex items-center gap-2 bg-white border border-border rounded-full px-4 py-2 text-sm font-bold text-forest-700 hover:bg-cream-50 transition-colors"
               >
                 {copied ? (
                   <>

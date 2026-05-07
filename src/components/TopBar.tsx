@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Bell, LogOut, User as UserIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { AvatarFallback } from './AvatarFallback';
 import type { DashboardTab } from './BottomNav';
 
+export interface NotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  time: string;
+  isNew: boolean;
+}
+
 interface TopBarProps {
   onLogout: () => void;
   activeTab?: DashboardTab;
   onTabChange?: (tab: DashboardTab) => void;
+  notifications?: NotificationItem[];
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange }) => {
+const FALLBACK_NOTIF: NotificationItem[] = [
+  {
+    id: 'welcome',
+    title: 'Selamat datang di JelantahHub!',
+    body: 'Setor pertamamu untuk dapat +1.000 poin bonus.',
+    time: 'Baru saja',
+    isNew: true,
+  },
+];
+
+export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange, notifications }) => {
   const { userData, user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
@@ -34,8 +53,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
       ? 'flex items-center gap-2 text-forest-700 font-bold transition-colors duration-150'
       : 'flex items-center gap-2 text-forest-900/50 hover:text-forest-700 transition-colors duration-150';
 
+  const notifList = notifications && notifications.length > 0 ? notifications : FALLBACK_NOTIF;
+  const newCount = notifList.filter((n) => n.isNew).length;
+
   return (
-    <header className="fixed top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-[#E8DEC4] z-40 flex items-center justify-between px-4">
+    <header className="fixed top-0 right-0 left-0 h-16 bg-cream-100/85 backdrop-blur-md border-b border-border z-40 flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <img
           src="/logos/jelantahhub-256.png"
@@ -70,7 +92,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
             className="p-2 text-forest-900/60 hover:bg-cream-200 rounded-full active:bg-cream-300 transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <Bell size={20} />
-            <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-amber-500 rounded-full border-2 border-cream-100" />
+            {newCount > 0 && (
+              <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-amber-500 rounded-full border-2 border-cream-100" />
+            )}
           </button>
 
           <AnimatePresence>
@@ -80,30 +104,41 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.96 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-12 w-72 bg-white rounded-xl shadow-[var(--shadow-lg)] border border-[#E8DEC4] overflow-hidden origin-top-right"
+                className="absolute right-0 top-12 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-[var(--shadow-lg)] border border-border overflow-hidden origin-top-right"
               >
-                <div className="px-4 py-3 border-b border-[#E8DEC4] flex items-center justify-between">
+                <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                   <p className="text-sm font-bold text-forest-900">Notifikasi</p>
-                  <span className="text-xs text-forest-900/60">1 baru</span>
+                  {newCount > 0 && (
+                    <span className="text-xs text-forest-700 font-semibold bg-forest-50 px-2 py-0.5 rounded-full">
+                      {newCount} baru
+                    </span>
+                  )}
                 </div>
-                <ul className="divide-y divide-[#E8DEC4] max-h-72 overflow-y-auto">
-                  <li className="px-4 py-3 hover:bg-cream-50">
-                    <div className="flex items-start gap-3">
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                      <div>
-                        <p className="text-sm font-semibold text-forest-900">Selamat datang di JelantahHub!</p>
-                        <p className="text-xs text-forest-900/65 mt-0.5">Setor pertamamu untuk dapat +1.000 poin bonus.</p>
-                        <p className="text-xs text-forest-900/45 mt-1">Baru saja</p>
+                <ul className="divide-y divide-border max-h-80 overflow-y-auto">
+                  {notifList.slice(0, 6).map((item) => (
+                    <li key={item.id} className="px-4 py-3 hover:bg-cream-50">
+                      <div className="flex items-start gap-3">
+                        <span
+                          className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${
+                            item.isNew ? 'bg-amber-500' : 'bg-forest-900/20'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-forest-900 truncate">{item.title}</p>
+                          <p className="text-xs text-forest-900/65 mt-0.5 line-clamp-2">{item.body}</p>
+                          <p className="text-xs text-forest-900/45 mt-1">{item.time}</p>
+                        </div>
                       </div>
-                    </div>
-                  </li>
+                    </li>
+                  ))}
                 </ul>
                 <button
                   type="button"
                   className="w-full px-4 py-2.5 text-xs font-semibold text-amber-700 hover:bg-cream-50 transition-colors"
                   onClick={() => setShowNotif(false)}
                 >
-                  Tandai semua sudah dibaca
+                  Tutup
                 </button>
               </motion.div>
             )}
@@ -133,11 +168,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onLogout, activeTab, onTabChange
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.96 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-12 w-56 bg-white rounded-xl shadow-[var(--shadow-lg)] border border-[#E8DEC4] py-2 origin-top-right"
+                className="absolute right-0 top-12 w-56 bg-white rounded-xl shadow-[var(--shadow-lg)] border border-border py-2 origin-top-right"
               >
-                <div className="px-4 py-2 border-b border-[#E8DEC4]">
+                <div className="px-4 py-2 border-b border-border">
                   <p className="text-sm font-bold text-forest-900 truncate">{userData?.name || 'Pengguna'}</p>
-                  <p className="text-xs text-forest-700 font-medium">Anggota Eco Terverifikasi</p>
+                  <p className="text-xs text-forest-900/55 truncate">{userData?.email || ''}</p>
+                  <p className="text-xs text-forest-700 font-medium mt-0.5">Anggota Eco Terverifikasi</p>
                 </div>
                 <button
                   type="button"

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Droplets, Gift } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -27,7 +27,7 @@ export const ActivityItem = ({ type, title, subtitle, points, status }: { type: 
         status === 'Verified' ? 'bg-forest-50 text-forest-700 border-forest-100' : 
         status === 'Completed' ? 'bg-forest-50 text-forest-700 border-forest-100' :
         status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-        'bg-cream-200 text-forest-900/70 border-[#E8DEC4]'
+        'bg-cream-200 text-forest-900/70 border-border'
       }`}>
         {status}
       </span>

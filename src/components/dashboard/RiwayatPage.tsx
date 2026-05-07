@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { Droplets } from 'lucide-react';
 import type { ActivityTransaction } from '../../hooks/useFirebaseLogic';
 
@@ -95,7 +95,7 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions, loading 
               className={
                 isActive
                   ? 'rounded-full px-4 py-1.5 text-sm font-semibold bg-forest-700 text-cream-50 transition-colors duration-150'
-                  : 'rounded-full px-4 py-1.5 text-sm bg-white border border-[#E8DEC4] text-forest-900/70 hover:text-forest-900 hover:border-forest-200 transition-colors duration-150'
+                  : 'rounded-full px-4 py-1.5 text-sm bg-white border border-border text-forest-900/70 hover:text-forest-900 hover:border-forest-200 transition-colors duration-150'
               }
             >
               {filter}
@@ -112,7 +112,7 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions, loading 
             <SkeletonRow />
           </>
         ) : filteredTransactions.length === 0 ? (
-          <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-10 flex flex-col items-center justify-center gap-3 text-center">
+          <li className="bg-white border border-border rounded-xl px-5 py-10 flex flex-col items-center justify-center gap-3 text-center">
             <div className="bg-amber-50 rounded-full p-4">
               <Droplets size={28} className="text-amber-400" />
             </div>
@@ -138,7 +138,7 @@ export const RiwayatPage: React.FC<RiwayatPageProps> = ({ transactions, loading 
 };
 
 const SkeletonRow: React.FC = () => (
-  <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-4 flex items-center justify-between gap-3 animate-pulse">
+  <li className="bg-white border border-border rounded-xl px-5 py-4 flex items-center justify-between gap-3 animate-pulse">
     <div className="flex items-center min-w-0 flex-1">
       <div className="bg-cream-200 rounded-lg w-10 h-10 shrink-0" />
       <div className="flex flex-col ml-3 min-w-0 flex-1 gap-2">
@@ -154,7 +154,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const SummaryCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="bg-white border border-[#E8DEC4] rounded-xl p-4">
+  <div className="bg-white border border-border rounded-xl p-4">
     <p className="text-xs text-forest-900/65">{label}</p>
     <p className="font-display font-extrabold text-forest-900 text-[1.5rem] leading-tight tabular-nums mt-1">
       {value}
@@ -165,7 +165,7 @@ const SummaryCard: React.FC<{ label: string; value: string }> = ({ label, value 
 const RiwayatRowFirestore: React.FC<{ tx: ActivityTransaction }> = ({ tx }) => {
   const isPositive = tx.pointsDelta > 0;
   return (
-    <li className="bg-white border border-[#E8DEC4] rounded-xl px-5 py-4 flex items-center justify-between gap-3">
+    <li className="bg-white border border-border rounded-xl px-5 py-4 flex items-center justify-between gap-3">
       <div className="flex items-center min-w-0">
         <div className="bg-amber-50 rounded-lg p-2 shrink-0">
           <Droplets size={20} className="text-amber-500" />

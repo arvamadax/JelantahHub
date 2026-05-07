@@ -1,6 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * JelantahHub Design Tokens
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * COLOR USAGE
+ *   forest-700  → primary CTA, headings, brand identity
+ *   forest-900  → body text (solid)
+ *   forest-900/65 → secondary text (captions, labels)
+ *   amber-500   → accent / conversion CTA / highlights
+ *   amber-700   → text accent (links, eyebrow)
+ *   cream-50    → subtle hover background
+ *   cream-100   → page background
+ *   cream-200   → secondary surface, badge background
+ *   border      → all borders (#E8DEC4) — use border-border / divide-border
+ *
+ * RADIUS SCALE
+ *   rounded-lg  → small button, badge container
+ *   rounded-xl  → default button, input, hover bg
+ *   rounded-2xl → card / panel / modal
+ *   rounded-3xl → hero card (premium emphasis)
+ *   rounded-full → pill, avatar, dot indicator
+ *
+ * SHADOW SCALE
+ *   shadow-md     → resting card
+ *   shadow-lg     → elevated panel / modal
+ *   shadow-amber  → primary CTA glow
+ *   shadow-forest → secondary CTA glow
+ *
+ * OPACITY SCALE (apply to text-forest-900)
+ *   /50  → very-muted / placeholder
+ *   /65  → secondary text / captions
+ *   /80  → body muted
+ *   solid → primary text / headings
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 @theme {
   --color-forest-700: #0E3B2E;
   --color-forest-800: #0A2D24;
@@ -30,7 +67,6 @@
   --color-accent:     var(--color-amber-500);
   --color-surface:    var(--color-cream-100);
   --color-text:       var(--color-forest-900);
-  --color-text-muted: #5C5648;
   --color-border:     #E8DEC4;
 
   --font-sans:    "Poppins", ui-sans-serif, system-ui;
