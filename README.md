@@ -1,6 +1,5 @@
 <div align="center">
   <img src="public/logos/jelantahhub-banner.png" alt="JelantahHub" width="640" />
-</div>
 
 ### **Jelantahmu, rupiahmu.**
 
