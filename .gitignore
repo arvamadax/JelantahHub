@@ -58,6 +58,6 @@ NOTES.md
 # Test rules harness (broken — references DRAFT_firestore.rules)
 firestore.rules.test.ts
 
-# Misc temporary / duplicate assets
-JelantahHub*.png
-JelantahHub*.jpg
+# Misc temporary / duplicate assets at repo root only
+/JelantahHub*.png
+/JelantahHub*.jpg
